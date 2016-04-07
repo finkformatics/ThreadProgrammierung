@@ -2,7 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 \usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{csquotes}
+\usepackage{tikz}
+\usepackage{graphicx}
 
 \newtheorem{definition}{Definition}
 
 \setlength\parindent{0pt}
+
+\newcommand\circlearound[1]{%
+	\tikz[baseline]\node[draw,shape=circle,anchor=base] {#1} ;}
