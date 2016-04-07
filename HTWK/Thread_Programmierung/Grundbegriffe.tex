@@ -1,0 +1,37 @@
+\chapter{Grundbegriffe}
+
+\section{Threads}
+
+\begin{definition}[Prozess]
+Sequentieller Rechenvorgang
+\end{definition}
+
+\begin{definition}[sequentiell]
+Alle Rechenschritte laufen nacheinander in einer vorgegebenen Reihenfolge ab.
+\end{definition}
+
+\begin{definition}[Thread]
+"`leichte"' Variante eines Prozesses
+\end{definition}
+
+Allgemeine Tendenz:
+\begin{enumerate}
+\item Systemkern möglichst "`schlank"' halten
+\item Systemkern möglichst selten betreten
+\end{enumerate}
+
+Unterschied zu Prozess:
+\begin{itemize}
+\item Kein eigener Speicherbereich
+\item Üblicherweise nicht vom Systemkern verwaltet ("`leight-weight process"'), vom Systemkern verwaltet
+\end{itemize}
+
+Vorteile:
+\begin{itemize}
+\item Wechsel zwischen Threads weniger aufwändig als Wechsel zwischen Prozessen
+\item Threads benötigen weniger Speicher
+\item Man kann viel mehr Threads ($\approx$ 10.000) als Prozesse ($\approx$ 100) laufen lassen.
+\end{itemize}
+
+Nachteil:\\
+Anwendungsprogrammierer muss sich um Verwaltung der Threads kümmern.
