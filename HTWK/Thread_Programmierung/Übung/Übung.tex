@@ -1,0 +1,32 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+\section{Thread-Beispiele}
+
+\subsection{Erzeugen von Threads in Java}\label{javathreads}
+Schreiben Sie ein Programm in Java, welches acht Threads erstellt und startet. Jeder Thread soll dabei "`Hello World from Thread i"' mit i als Index des Threads im Array ausgeben. Beobachten und interpretieren Sie das Ergebnis.\\
+\\
+Lösung: \url{https://gist.github.com/lukaswerner/c1a53b8b03fe4d93e1e9dfcfc50c9cb5}
+
+\subsection{Erzeugen von Threads in Java (Ohne Synchronisierung von Strings)}
+Erweitern Sie das Programm aus \ref{javathreads} so, dass die Ausgabe des Strings "`Hello World from Thread i"' nicht synchronisiert erfolgt. Schreiben Sie dafür eine Methode, welche einen String Zeichen für Zeichen ausgibt, rufen Sie diese Methode anstelle von System.out.println() auf.\\
+\\
+Lösung: \url{https://gist.github.com/lukaswerner/61a25246aca3c9fc3fa7c57d86f42af5}
+
+\subsection{Race Condition Beispiel}\label{racecondition}
+Schreiben Sie ein Programm in Java, welches $ \geq 10000 $ Threads startet. Jeder Thread soll dabei eine statische Variable (z.B. \emph{z}) hochzählen mit dem \emph{++}-Operator. Geben Sie am Ende diese statische Variable aus und beobachten, sowie interpretieren das Ergebnis.\\
+\\
+Lösung: \url{https://gist.github.com/lukaswerner/32e344a4c1febc69724d08a60c56064c}
+
+\subsection{Race Condition Lösung}
+Erweitern Sie das Programm aus \ref{racecondition} so, dass die Race Condition nicht stattfindet. Implementieren Sie hierfür eine Methode, die gesperrt wird, sobald ein Thread sie ausführt (Stichwort: \emph{synchronized}). Diese Methode soll dann \emph{z++} ausführen.\\
+\\
+Lösung: \url{https://gist.github.com/lukaswerner/12825318f45e55ec2f3f502a0a49584a}
+
+\end{document}
