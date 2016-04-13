@@ -104,14 +104,14 @@ Thread 2 führt aus: \circlearound{a} \circlearound{b} \circlearound{c}\\
 \\
 Beispiele für mögliche Abläufe:
 \begin{itemize}
-\item \circlearound{1} \circlearound{a} \circlearound{2} \circlearound{b} \circlearound{3} \circlearound{c}
-\item \circlearound{a} \circlearound{b} \circlearound{c} \circlearound{1} \circlearound{2} \circlearound{3}
-\item \circlearound{a} \circlearound{1} \circlearound{2} \circlearound{3} \circlearound{b} \circlearound{c}
-\item . . .
+\item \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {1}; \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {a}; \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {2}; \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {b}; \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {3}; \tikz[baseline]\node[draw=black!30!red,shape=circle,anchor=base] {c};
+\item \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {1}; \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {a}; \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {2}; \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {b}; \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {3}; \tikz[baseline]\node[draw=black!50!green,shape=circle,anchor=base] {c};
+\item \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {1}; \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {a}; \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {2}; \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {b}; \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {3}; \tikz[baseline]\node[draw=black!30!blue,shape=circle,anchor=base] {c};\\
+\\. . .
 \end{itemize}
-
-\includegraphics[width=.4\textwidth]{Nondeterminism}
-
+Mögliche Abläufe visualisiert (Beispiele sind farblich markiert):\\
+\includegraphics[width=.4\textwidth]{Nondeterminism}\\
+\\
 Da bei jedem Test der Zeitplaner eine andere Ausführungsreihenfolge (Umstände des Wettrennens, engl. race conditions) wählen kann, ist der Test praktisch nicht reproduzierbar. Wegen der großen Anzahl möglicher Abläufe ist ein systematisches Testen aussichtslos ("`Zustandsexplosion"').
 
 \section{Kritische Bereiche}
