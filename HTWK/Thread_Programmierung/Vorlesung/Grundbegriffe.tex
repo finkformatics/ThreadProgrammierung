@@ -2,17 +2,11 @@
 
 \section{Threads}
 
-\begin{definition}[Prozess]
-Sequentieller Rechenvorgang
-\end{definition}
-
-\begin{definition}[sequentiell]
-Alle Rechenschritte laufen nacheinander in einer vorgegebenen Reihenfolge ab.
-\end{definition}
-
-\begin{definition}[Thread]
-"`leichte"' Variante eines Prozesses
-\end{definition}
+\begin{description}
+\item[Prozess] Sequentieller Rechenvorgang
+\item[sequentiell] Alle Rechenschritte laufen nacheinander in einer vorgegebenen Reihenfolge ab.
+\item[Thread] "`leichte"' Variante eines Prozesses
+\end{description}
 
 Allgemeine Tendenz:
 \begin{enumerate}
@@ -34,32 +28,20 @@ Vorteile:
 \end{itemize}
 
 Nachteil:\\
-Anwendungsprogrammierer muss sich um Verwaltung der Threads kümmern.\\
-\\
-Viele Programmiersprachen bieten heutzutage Programmbibliotheken für Threads an (Beispiel: \emph{PThread} in C). Wir verwenden in dieser Veranstaltung \emph{Java} als Programmiersprache.
+Anwendungsprogrammierer muss sich um Verwaltung der Threads kümmern. Viele Programmiersprachen bieten heutzutage Programmbibliotheken für Threads an (Beispiel: \emph{PThread} in C). Wir verwenden in dieser Veranstaltung \emph{Java} als Programmiersprache.
 
-\begin{definition}[parallel]
-Mehrere Threads laufen gleichzeitig auf verschiedenen Rechnerkernen.
-\end{definition}
+\begin{description}
+\item[parallel] Mehrere Threads laufen gleichzeitig auf verschiedenen Rechnerkernen.
+\item[verschränkt (engl. interleaved)] Threads laufen abwechselnd je ein Stück weit.
+\item[nebeneinander laufend (auch: nebenläufig, engl. concurrent)] Mehrere Threads laufen parallel oder miteinander verschränkt.
+\end{description}
 
-\begin{definition}[verschränkt (engl. interleaved)]
-Threads laufen abwechselnd je ein Stück weit.
-\end{definition}
-
-\begin{definition}[nebeneinander laufend (auch: nebenläufig, engl. concurrent)]
-Mehrere Threads laufen parallel oder miteinander verschränkt.
-\end{definition}
-
-Auch Mischformen sind möglich.\\
-\\
-Unterschied:\\
-\begin{definition}[Rechenzeit (cpu time)]
-Zeit, die der Prozessor mit Rechnen zubringt.
-\end{definition}
-
-\begin{definition}[Bearbeitungszeit (wall clock time)]
-Umfasst auch Wartezeiten
-\end{definition}
+Auch Mischformen sind möglich.
+\subsubsection*{Unterschied:}
+\begin{description}
+\item[Rechenzeit (engl. cpu time)] Zeit, die der Prozessor mit Rechnen zubringt.
+\item[Bearbeitungszeit (engl. wall clock time)] Umfasst auch Wartezeiten.
+\end{description}
 
 \subsubsection*{Amdahlsches Gesetz (Gene Amdahl, 1967):}
 Wenn eine Aufgabe die Bearbeitungszeit $ a $ benötigt und der Anteil $ 0 \leq p \leq 1 $ davon parallelisierbar ist, dann benötigt sie auf $ n $ Prozessoren die Bearbeitungszeit
@@ -83,9 +65,9 @@ Beschleunigung (speed up):
 Fazit: Der nicht-parallelisierbare Anteil dominiert die Bearbeitungszeit.
 
 \section{Nicht-Determinismus}
-\begin{definition}[Nicht-Determinismus]
-Das Verhalten eines Systems hat Freiheitsgrade.
-\end{definition}
+\begin{description}
+\item[Nicht-Determinismus (engl. nondeterminism)] Das Verhalten eines Systems hat Freiheitsgrade.
+\end{description}
 
 Nicht-Determinismus hat zwei Anwendungen:
 \begin{enumerate}
@@ -119,25 +101,39 @@ Threads sind asynchron, d.h. sie laufen mit versch. Geschwindigkeiten. Es treten
 
 \section{Kritische Bereiche}
 Beispiel:\\
-Zähler z wird initialisiert mit Null. Jeder Thread (von z.B. 10.000) addiert Eins zu z. z++ wird vom Compiler sinngemäß so übersetzt:\\
+Zähler \texttt{z} wird initialisiert mit 0. Jeder Thread (von z.B. 10.000) addiert 1 zu \texttt{z}. \texttt{z++} wird vom Compiler sinngemäß so übersetzt:\\
 \\
-1 int temp = z; \\
-2 temp = temp + 1; \\
-3 z = temp; \\
+\texttt{1 \ int temp = z;} \\
+\texttt{2 \ temp = temp + 1;} \\
+\texttt{3 \ z = temp;} \\
 \\
-z ist eine gemeinsame Variable (shared variable). temp ist eine lokale Variable (temporäre Variable).
-Jeder Thread hat seine eigene Version von temp.\\
-Beispielablauf für 3 Threads T1, T2, T3:\\
+\texttt{z} ist eine gemeinsame Variable (gemeinsamer Speicher, shared memory), \texttt{temp} ist eine lokale Variable (temporäre Variable).
+Jeder Thread hat seine eigene Version von \texttt{temp}.\\
 \\
-HIER TABELLE EINFÜGEN
+Beispielablauf für 3 Threads T1, T2, T3:
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c}
+\multicolumn{2}{c|}{\textbf{T1}} & \multicolumn{2}{c|}{\textbf{T2}} & \multicolumn{2}{c|}{\textbf{T3}} & \textbf{z} \\ \hline
+\emph{Zeile} & \emph{temp1} & \emph{Zeile} & \emph{temp2} & \emph{Zeile} & \emph{temp3} & 0 \\ \cline{1-6}
+1 & 0 & {} & {} & {} & {} & {} \\
+{} & {} & 1 & 0 & {} & {} & {} \\ 
+{} & {} & 2 & 1 & {} & {} & {} \\ 
+{} & {} & 3 & {} & {} & {} & 1 \\ 
+{} & {} & {} & {} & 1 & 1 & {} \\ 
+{} & {} & {} & {} & 2 & 2 & {} \\ 
+{} & {} & {} & {} & 3 & {} & 2 \\ 
+2 & 1 & {} & {} & {} & {} & {} \\ 
+3 & {} & {} & {} & {} & {} & 1 \\ 
+\end{tabular}
+\end{center}
 
-Der Wert von z sollte am Ende 3 sein. T1, T2, T3 kommen sich gegenseitig in die Quere: Einmischung (interference). Einmischung kann es nur über gemeinsame Variablen geben.
-Eine Methode, um Einmischung zu verhindern ist die Verwendung von kritischen Bereichen.
+Der Wert von \texttt{z} sollte am Ende 3 sein. T1, T2, T3 kommen sich gegenseitig in die Quere: Einmischung (interference). Einmischung kann es nur über gemeinsame Variablen geben.
+Eine Methode, um Einmischung zu verhindern ist die Verwendung von \emph{kritischen Bereichen}.
 
 \begin{description}
 \item[Kritischer Bereich (auch kritischer Abschnitt, Emil. critical region, critical section)] Programmfragment in dem sich zu jedem Zeitpunkt höchstens ein Thread befindet.
-\item[Gegenseitiger Ausschluss (mutual exclusion, exklusives Betriebsmittel]
-Wenn sich ein Thread in einen kritischen Bereich befindet, dann werden alle anderen Threads davon abgehalten, den krit. Bereich zu betreten.
+\item[Gegenseitiger Ausschluss (mutual exclusion, exklusives Betriebsmittel)]
+Wenn sich ein Thread in einem kritischen Bereich befindet, dann werden alle anderen Threads davon abgehalten, den kritischen Bereich zu betreten.
 \end{description}
 
 Beispiele für exklusive Betriebsmittel:
@@ -147,51 +143,68 @@ Beispiele für exklusive Betriebsmittel:
 \item Schreibzugriff auf Speicherblock
 \item Schreibzugriff auf Bus
 \item Drucker
-\item Soundkarte
+\item Soundkarte (?)
 \end{itemize}
 
 Beispiel für einen kritischen Bereich:\\
-gemeinsam int z = 0; 	// Deklaration der gem. Var. z\\
-kritisch z {\\
-	z++			// kritischer Bereich, nur hier darf auf z zugegriffen werden\\
-}\\
+\texttt{gemeinsam int z = 0; // Deklaration der gem. Var. z}\\
+\texttt{kritisch z \{}\\
+\texttt{z++ // kritischer Bereich, nur hier darf auf z zugegriffen werden}\\ % TODO: Einrücken
+\texttt{\}}\\
 \\
-Wenn krit. Bereich als Sprachmittel gegeben sind, kann der Compiler die korrekte Verwendung kritischer Bereiche überprüfen.\\
-Der kritische Bereich kann von mehreren Threads nicht echt nebeneinander abgearbeitet werden. der krit. Bereich wird also von den Threads in einer gewissen Reihenfolge nacheinander abgearbeitet (\emph{Serialisierbarkeit}). Zwischenzustände sind von anderen Thread nicht beobachtbar, weil die gemeinsamen Variablen nur im kritischen Bereich zugreifbar ist. Der kritische Bereich wirkt wie eine einzelne Aktion: er ist \emph{unteilbar} (atomar, atomic).
+Wenn kritische Bereiche als Sprachmittel gegeben sind, kann der Compiler die korrekte Verwendung derselben überprüfen.\\
+Der kritische Bereich kann von mehreren Threads nicht echt nebeneinander abgearbeitet werden, er wird also von den Threads in einer gewissen Reihenfolge nacheinander abgearbeitet (\emph{Serialisierbarkeit}). Zwischenzustände sind von anderen Threads nicht beobachtbar, weil die gemeinsamen Variablen nur im kritischen Bereich zugreifbar sind. Der kritische Bereich wirkt wie eine einzelne Aktion: er ist \emph{unteilbar} (atomar, engl. atomic).
 
 \section{Sperren}
 \begin{description}
-\item[Sperre (lock)] Datenstruktur mit Operationen belegen und freigeben
-\item[erzeugen(l)] legt Sperre l an und initialisiert l.frei mit false (l.frei - ist Sperre frei )
-\item[belegen(l)] wartet solange, bis l.frei den Wert true hat und setzt dann l.frei auf false
-\item[freigeben(l)] Setzt l.frei auf true
+\item[Sperre (lock)] Datenstruktur mit Operationen belegen und freigeben.
+\item[erzeugen(l)] legt Sperre \texttt{l} an und initialisiert \texttt{l.frei} mit \texttt{false} (\texttt{l.frei}: Sperre frei).
+\item[belegen(l)] wartet solange, bis \texttt{l.frei} den Wert \texttt{true} hat und setzt es dann auf \texttt{false}.
+\item[freigeben(l)] Setzt \texttt{l.frei} auf \texttt{true}.
 \end{description}
 
-Sperren können verwendet werden, um krit. Bereiche zu implementieren.\\
-Beispiel: Sperre l bewacht die gem. Var. z.\\
+Sperren können verwendet werden, um kritische Bereiche zu implementieren.\\
+Beispiel: Sperre \texttt{l} bewacht die gemeinsame Variable \texttt{z}.\\
 Programm (HP):\\
-Sperre l anlegen mit l.frei = false.\\
-Threads anlegen. Setze gem. Var. z = 0.\\
-freigeben(l).\\
+\\
+\texttt{Sperre l anlegen mit l.frei = false}\\
+\texttt{Threads anlegen}
+\texttt{Setze gem. Var. z = 0}\\
+\texttt{freigeben(l)}\\
 
 In jedem Thread:\\
-\begin{enumerate}
-\setcounter{enumi}{0}
-\item belegen(l);
-\item int temp = z;
-\item temp = temp + 1;
-\item z = temp;
-\item freigeben(l);
-\end{enumerate}
+\\
+\texttt{0 \ belegen(l);} \\
+\texttt{1 \ int temp = z;} \\
+\texttt{2 \ temp = temp + 1;} \\
+\texttt{3 \ z = temp;} \\
+\texttt{4 \ freigeben(l);}
+\\
 
 Paradox: Um kritische Bereiche nutzen zu können, braucht man schon kritische Bereiche.
 
-Beispielsablauf für 2 Threads:
-HIER TABELLE EINFÜGEN
-\\
+Beispielablauf für 2 Threads:
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c}
+\multicolumn{2}{c|}{\textbf{T1}} & \multicolumn{2}{c|}{\textbf{T2}} & \textbf{z} & \textbf{l.frei} & \textbf{Bemerkung} \\ \hline
+\emph{Zeile} & \emph{temp1} & \emph{Zeile} & \emph{temp2} & 0 & true & {} \\ \cline{1-4}
+0 & {} & {} & {} & {} & false & {} \\
+{} & {} & 0 & {} & {} & {} & T2 wartet in Zeile 0 \\
+1 & 0 & 0 & {} & {} & {} & {} \\
+2 & 1 & 0 & {} & {} & {} & {} \\
+3 & {} & 0 & {} & 1 & {} & {} \\
+4 & {} & 0 & {} & {} & true & {} \\
+{} & {} & 0 & {} & {} & false & Ende der Wartezeit \\
+{} & {} & 1 & 1 & {} & {} & {} \\
+{} & {} & 2 & 2 & {} & {} & {} \\
+{} & {} & 3 & {} & 2 & {} & {} \\
+{} & {} & 4 & {} & {} & true & {} \\
+\end{tabular}
+\end{center}
+
 Sprechweise:
 \begin{itemize}
-\item Thread bewirbt sich für die Sperre ( = ruft belegen(l) auf )
-\item Thread besitzt Sperre l = ist im krit. Bereich = hat belegen(l) erfolgreich auf- gerufen
-\item Thread erwirbt die Sperre l = betritt den krit. Bereich Streit um die Sperre (lock contention)
+\item Thread bewirbt sich für die Sperre (= ruft \texttt{belegen(l)} auf )
+\item Thread besitzt Sperre \texttt{l} (= ist im krit. Bereich/hat \texttt{belegen(l)} erfolgreich aufgerufen)
+\item Thread erwirbt die Sperre \texttt{l} (= betritt den krit. Bereich), Streit um die Sperre (engl. lock contention)
 \end{itemize}
