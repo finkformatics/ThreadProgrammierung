@@ -50,11 +50,13 @@ $ b := $ Zeit bei parallelem Ablauf
 \end{align*}
 \noindent
 Testwerte:\\
-$ a = 0,91451245515s $\\
-$ b = 0,6353406861s $\\
+$ a = 0,0000588089s $\\
+$ b = 0,6387376938s $\\
 \begin{align*}
-p = \frac{n \left(b - a\right)}{a \left(1 - n\right)} = \frac{10000 \left(0,6353406861s - 0,91451245515s\right)}{0,91451245515s \left(1 - 10000\right)} = 0,3052989... \approx 30,5 \%
+p = \frac{n \left(b - a\right)}{a \left(1 - n\right)} = \frac{10000 \left(0,6387376938s - 0,0000588089s\right)}{0,0000588089s \left(1 - 10000\right)} = -10861,3281... \approx -1086132,8 \%
 \end{align*}
+
+\paragraph{Mit Parallelisierung erheblich langsamer!}
 
 \paragraph{b)} Welchen Anteil erwarten Sie für $ k = 20000 $ Threads?
 
