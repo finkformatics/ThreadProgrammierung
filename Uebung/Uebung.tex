@@ -124,6 +124,83 @@ Behauptung: $ \anz(m, n) = \binom{m + n}{n} $
 
 \paragraph{c)} Schätzen Sie die Größenordnung von $ \anz(m, n) $.
 
-Beim nächsten mal!
+(Korrektur):\\
+Behauptung: $ \anz(n,n) \geq 2^n - 1$
 
+\begin{proof}
+\begin{align*}
+& \text{1. } n = 1: \anz(n,n) = \binom{2}{1} = 2 \\
+& \text{2. } n > 1: \anz(n,n) = \binom{2n}{1} = \binom{2n-1}{n} + \binom{2n-1}{n-1}\\
+& 2^n = 2 * 2^{n-1 } \overset{\text{IV}}{\leq} 2 * \binom{2(n-2)}{n-1} \leq \binom{2n-1}{n} + \binom{2n-1}{n-1}\\
+& \text{weil } \binom{2n-1}{n-1} \geq \binom{2n-2}{n-1} \text{ und } \binom{2n-1}{n} \geq \binom{2n-2}{n-1} \\
+& \binom{2n-1}{n-1} = \binom{2n-2}{n-1} + \binom{2n-2}{n-2}
+\end{align*}
+\end{proof}
+
+\section{Verschränkung (2)}
+
+$n $ Threads sollen verschränkt zueinander laufen. Jeder Thread habe $ 2 $ Schritte auszuführen.
+
+\paragraph{a)} Geben Sie eine rekursive Definition an für die Anzahl $ \anz^*(n) $ der möglochen Abläufe.
+
+\subsubsection*{Lösung}
+Es gilt $ \anz^*(1) = 1 $. Sei nun $ n > 1$.\\
+Nach IV liefert $ \anz^*(n-1) $ die Anzahl der möglichen Abläufe für $ n - 1 $ Threads.\\
+
+% TODO: evtl. Zeichnung für Schritte der n - 1 Threads mit (2(n-1) Schritte)
+%       Teil der Zeichnung: $(2(n - 1)) - 1$ Möglichkeiten für den letzten Thread seinen ersten Schritt zu plazieren.
+
+% TODO: zweite Zeichnung: aus dieser geht hervor dass die Positionen aus einer Fläche mit  $ \frac{(2n-1)*(2n-2)}{2} $ hervorgeht
+
+Also gilt:\\
+\begin{equation*}
+\anz^*(n) = 
+\begin{cases}
+1 & \text{, falls } n = 1,\\
+\anz(n - 1) * (2n - 1) * (n - 1) & \text{, sonst.}
+\end{cases}
+\end{equation*}
+
+
+
+\paragraph{b)} Finden Sie einen geschlossenen Ausdruck für $ \anz^*(n) $.
+\paragraph{c)} Schätzen Sie die Größenordnung von $ \anz^*(n) $.
+b) sowie c) kann auch Prof. Geser nicht lösen, wächst aber in etwa im Quadrat der Fakultät
+
+
+\section{zeitliche Abläufe}
+
+\paragraph{a)} Geben Sie zu dem folgenden zeitlichen Ablauf den passenden seriellen Ablauf (= Aktionsfolge) an:
+$ \{(a, 5.3), (b, 3.7), (c, 3.2), (a, 1.7), (a, 2.1), (b, 2.5)\}$
+
+\subsubsection*{Lösung}
+\begin{equation*}
+\ f(x) = 
+\begin{cases}
+a & \text{, falls } x \in {1,2,6},\\
+b & \text{, sonst } x \in {3,5},\\
+c & \text{, sonst.}
+\end{cases}
+\end{equation*}
+
+\paragraph{b)} Welche der folgenden Mengen von Ereignissen sind diskrete zeitliche Abläufe? Dazu sei $ A = \{a, b\} $.  
+
+% TODO Lösungen eintragen
+\subsubsection*{Lösung}
+
+\paragraph{c)} Geben Sie zu jedem diskreten zeitlichen Ablauf $ E $ aus Teilaufgabe $ b) $ die Ereignisse $E^1, E^2, E^3 $ an.
+
+% TODO Lösungen eintragen
+\subsubsection*{Lösung}
+
+\section{Einigkeit}
+Beweisen Sie, dass für alle Threads $ p_1 $ , $ p_2 $ folgende Aussagen äquivalent sind:
+
+% TODO Aussagen einfügen
+
+Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von hread $ p_i , i \in \{1,2\}$.\\
+Voraussetzung: Für alle $ e \in E_i $ gilt $aktion(e) \in A_i, i \in \{1,2\}$.\\
+Dann gilt: $ \pi_{A_i}(E_i) = E_i$
+\\
+Beim nächsten mal!
 \end{document}
