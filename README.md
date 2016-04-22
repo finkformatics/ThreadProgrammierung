@@ -1,2 +1,5 @@
-# VorlesungsSkripte
-Sammlung von eigens verfassten Vorlesungs-Skripten der Universität Leipzig und HTWK Leipzig.
+# ThreadProgrammierung
+
+Mitschrift der Vorlesung Thread Programmierung an der HTWK Leipzig, sowie der dazugehörigen Übung.
+
+Alle Programmierbeispiele sind im GitHub-Repository https://github.com/lukaswerner/JavaConcurrency zu finden.
