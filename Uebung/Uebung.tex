@@ -10,6 +10,8 @@
 
 \DeclareMathOperator{\anz}{anz}
 
+\setlength\parindent{0pt}
+
 \title{Übung zur Vorlesung Thread Programmierung}
 \subtitle{Alle Programmieraufgaben sind auch im GitHub-Repository \url{https://github.com/lukaswerner/JavaConcurrency} zu finden.}
 \date{}
@@ -144,8 +146,8 @@ $n $ Threads sollen verschränkt zueinander laufen. Jeder Thread habe $ 2 $ Schr
 \paragraph{a)} Geben Sie eine rekursive Definition an für die Anzahl $ \anz^*(n) $ der möglochen Abläufe.
 
 \subsubsection*{Lösung}
-Es gilt $ \anz^*(1) = 1 $. Sei nun $ n > 1$.\\
-Nach IV liefert $ \anz^*(n-1) $ die Anzahl der möglichen Abläufe für $ n - 1 $ Threads.\\
+Es gilt $ \anz^*(1) = 1 $. Sei nun $ n > 1 $.\\
+Nach IV liefert $ \anz^*(n - 1) $ die Anzahl der möglichen Abläufe für $ n - 1 $ Threads.\\
 
 % TODO: evtl. Zeichnung für Schritte der n - 1 Threads mit (2(n-1) Schritte)
 %       Teil der Zeichnung: $(2(n - 1)) - 1$ Möglichkeiten für den letzten Thread seinen ersten Schritt zu plazieren.
@@ -156,8 +158,8 @@ Also gilt:\\
 \begin{equation*}
 \anz^*(n) = 
 \begin{cases}
-1 & \text{, falls } n = 1,\\
-\anz(n - 1) * (2n - 1) * (n - 1) & \text{, sonst.}
+1 & \text{falls } n = 1\\
+\anz(n - 1) (2n - 1) (n - 1) & \text{sonst}
 \end{cases}
 \end{equation*}
 
@@ -177,9 +179,9 @@ $ \{(a, 5.3), (b, 3.7), (c, 3.2), (a, 1.7), (a, 2.1), (b, 2.5)\}$
 \begin{equation*}
 \ f(x) = 
 \begin{cases}
-a & \text{, falls } x \in {1,2,6},\\
-b & \text{, sonst } x \in {3,5},\\
-c & \text{, sonst.}
+a & \text{falls } x \in {1, 2, 6}\\
+b & \text{falls } x \in {3, 5}\\
+c & \text{sonst}
 \end{cases}
 \end{equation*}
 
@@ -188,19 +190,22 @@ c & \text{, sonst.}
 % TODO Lösungen eintragen
 \subsubsection*{Lösung}
 
-\paragraph{c)} Geben Sie zu jedem diskreten zeitlichen Ablauf $ E $ aus Teilaufgabe $ b) $ die Ereignisse $E^1, E^2, E^3 $ an.
+\paragraph{c)} Geben Sie zu jedem diskreten zeitlichen Ablauf $ E $ aus Teilaufgabe $ (b) $ die Ereignisse $E^1, E^2, E^3 $ an.
 
 % TODO Lösungen eintragen
 \subsubsection*{Lösung}
 
 \section{Einigkeit}
-Beweisen Sie, dass für alle Threads $ p_1 $ , $ p_2 $ folgende Aussagen äquivalent sind:
+Beweisen Sie, dass für alle Threads $ p_1 $, $ p_2 $ folgende Aussagen äquivalent sind:
+\begin{align*}
+& \alpha) \ \pi_{A_1 \cap A_2} \left(E_1 \cup E_2\right) = E_1 \cap E_2\\
+& \beta) \ \pi_{A_1 \cap A_2} \left(E_1 \oplus E_2\right) = \emptyset\\
+& \gamma) \ \pi_{A_1} \left(E_2\right) = \pi_{A_2} \left(E_1\right)
+\end{align*}
 
-% TODO Aussagen einfügen
-
-Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von hread $ p_i , i \in \{1,2\}$.\\
-Voraussetzung: Für alle $ e \in E_i $ gilt $aktion(e) \in A_i, i \in \{1,2\}$.\\
-Dann gilt: $ \pi_{A_i}(E_i) = E_i$
+Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von Thread $ p_i, i \in \{1, 2\}$.\\
+Voraussetzung: Für alle $ e \in E_i $ gilt $ aktion(e) \in A_i, i \in \{1, 2\} $.\\
+Dann gilt: $ \pi_{A_i} \left(E_i\right) = E_i $\\
 \\
 Beim nächsten mal!
 \end{document}
