@@ -23,7 +23,104 @@ Beispiel: Schlacht bei Isis 333 v. Chr. $\rightarrow$ Aktion, Zeitpunkt
 $zeit(e)1 = zeit(e2) \leftrightarrow e1 = e2 $
 \end{enumerate}
 
+\begin{description}
+	\item[diskreter zeitlicher Ablauf (auch Geschichte)] Menge E von Ereignissen, so dass:
+	\begin{enumerate}
+		\item die Menge der Zeitpunkte E keinen Häufungspunkt hat
+		\item die Menge der Zeitpunkte von E ein kleinstes Element hat
+	\end{enumerate}
+\end{description}
+Interessant sind hier nicht die Zeitpunkte selber, sondern nur deren Lage zueinander, d.h. die Reihenfolge der Aktionen. (Wenn dies nicht der Fall ist und Termine eingehalten werden müssen $\rightarrow$ Echtzeitsystem)
+
+\begin{description}
+	\item[Def: (Leslie Lamport 1978)] Ereignis $e_1$ kommt vor Ereignis $e_2$ :\\
+	$e_1 \rightarrow e_2 \leftrightarrow  zeit(e_1) < zeit(e_2)$
+\end{description}
+
+Beispiel: Hochmut  $\rightarrow$ Fall.\\
+Es gilt:  $\rightarrow$ ist reflexiv, transitiv, total, fundiert (d.h. Wohlordnung)
+
+Eine Relation $R \in E \times E$ auf der Menge $E$ heißt
+\begin{itemize}
+	\item irreflexiv, falls $\forall e \in E $ gilt $ (e, e) \notin R$
+	\item transitiv, falls $\forall e_1, e_2, e_3 \in E $ gilt: Falls $(e_1,e_2) \in R $ und $ (e_2,e_3) \in R$, dann $(e_1,e_3) \in R$.
+	\item total, falls $\forall e_1,e_2 \in E$ gilt: Falls $e_1 \neq e_2$, dann $(e_1, e_2) \in R$ oder $(e_2, e_1) \in R$
+	\item fundiert, falls es keine unendliche Folge $(e_i)_{i \in \mathbb{N}}$ gibt mit $e_i \in E$ für alle $i \in \mathbb{N}$ und $(e_i, e_{i+1}) \in R$ für alle $i \in \mathbb{N}$
+\end{itemize}
+
+Einschub: R azyklisch, falls es keine endliche Folge $(e_1,..,e_n)$ gibt mit $(e_1,e_2) \in R, (e_2,e_3) \in R,...,(e_{n-1},e_n) \in R, (e_n,e_1) \in R$.
+Falls R irreflexiv und transitiv ist, dann ist R auch azyklisch.
+
+Für einen nicht leere Geschichte E sei min E definiert als das kleinste Element von E bezüglich $\rightarrow$, d.h. dasjenige $e \in E$ für das gilt:
+\begin{equation*}
+	\forall f \in E\setminus{e}: e \rightarrow f
+\end{equation*}
+
+Tipp: Relation als Graph vorstellen mit Wegen.
+\begin{itemize}
+	\item Es existiert kein Weg der Länge 1 zu sich selber.
+	\item Wenn es einen Weg von 1 zu 2 und 2 zu 3 gibt, dann existiert eine Abkürzung von 1 zu 3.
+	\item Es gibt immer Weg von jedem zu jedem Knoten.
+	\item Es existiert kein unendlicher Weg.
+\end{itemize}
+
+\begin{description}
+	\item[Implizite Definition] Definition durch eine charakterisierende Eigenschaft
+	\item[Wohldefiniertheit der implizierten Definition] Es gibt genau ein Objekt, dass die charakterisierende Eigenschaft erfüllt.
+	(Bsp.: "Wurzel von x ist das, was quadriert x ergibt" ist nicht eindeutig (gar keine Lsg. bzw. mehrere))
+\end{description}
+
+Wohldefiniertheit von min E gilt, weil R total und E (mind.) ein kleinstes Element hat. (Ganze Zahlen sind z.B. total auf $<$, haben aber kein kleinstes Element)
+
+Das i-te Element aus E ($E^i$) ist dann für $i \in \mathbb{N}, i \leq |E|$:
+\begin{equation*}
+	E^i := \begin{cases}
+		\text{min E}&\text{, falls }i = 1\\
+		(E \setminus{\text{min E}})^{i-1}& \text{, sonst}
+	\end{cases}
+\end{equation*}
+
+Auch hier ist Wohldefiniertheit zu zeigen.\\
+Projektion auf eine Menge B von Aktionen (“Sicht“):
+\begin{equation*}
+	\pi_B(E) := e \in E | aktion(e) \in B
+\end{equation*}
+Zustand zum Zeitpunkt $t \in R$:
+\begin{equation*}
+	z_t(E) := e \in E | zeit(e) \leq t
+\end{equation*}
+
+
+$\rightarrow$ für Zeiträume: Ende von Zeitraum A kommt vor Anfang von Zeitraum B: A $\rightarrow$ B Es gilt: Für Zeiträume ist $\rightarrow$ nicht total!
+A $\rightarrow$ B v B $\rightarrow$ A $\leftrightarrow$ A und B überlappen nicht. (Wenn sich A und B überlappen gilt weder A  $\rightarrow$ B noch B  $\rightarrow$ A)
+
+\begin{description}
+	\item[Prozessalphabet] Menge der Aktionen, die der Thread p "sieht"
+	\item[Gemeinsame Aktionen von $p_1$ und $p_2$] $\alpha(p_1) \cap \alpha(p_2)$
+	\item[Einigkeit (engl. match)] Ereignisse mit gemeinsamen Aktionen finden gemeinsam statt:
+	\begin{itemize}
+		\item (1) $\pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \cup E_2 = E_1 \cap E_2$ Gleichwertig zu (1) sind:\\
+		\item (2) $\pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \oplus E_2 = \emptyset$ // symmetr. Differenz: Vereinigung ohne Schnitt
+		\item (3) $\pi_{\alpha(p_1)} = \pi_{\alpha(p_2)}$
+	\end{itemize}
+	\item[$E_i$ Ereignis von Thread i] Es gilt: $\forall e \in E_i: aktion(e) \in \alpha(p_i)$
+	\item[Faire Mischung]$E_1 \cup E_2$
+	\item[Gemeinsame Mischung] $\pi_{\alpha(p_i)}(E_1 \cap E_2) = E_i, für i \in {1,2}$, falls sich $p_1$ und $p_2$ einig sind. Es gilt: $E_1 \cup E_2$.
+\end{description}
+
+
 \section{Serielle Abläufe}
+Wenn man nicht an den Zeitpunkten der Ereignisse interessiert ist, sondern nur an ihrer Lage zueinander, kann man statt einer Ereignismenge auch eine Aktionenfolge als Beschreibungsmittel für einen Ablauf nehmen.
+
+Beispiele: Sei A = {a,b}. Endliche Folge (a, b, a) kann auch dargestellt werden als Funktion $f: {1,2,3} \rightarrow A$ mit $f(x) = \begin{cases} a &\text{, falls x = 1 oder x=3}\\ b &\text{sonst}\end{cases}$\\
+Wertetabelle von f:\\
+x     1   2   3\\
+f(x)  a   b   a\\
+
+Unendliche Folge (a, b, b, a, b, b, ...) als Funktion $f: \mathbb{N} \rightarrow A$ mit $f(x) = \begin{cases} a &\text{, falls x mod 3 = 1,} \\b &\text{sonst}\end{cases}$
+$A^k$ k-Tupel von Elementen aus A und \\
+${i \in \mathbb{N} | i \leq k} \rightarrow$ A Folgen der Länge k werden miteinander identifiziert.
+
 
 \section{Faire Mischung}
 
