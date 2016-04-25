@@ -184,21 +184,48 @@ c & \text{, sonst.}
 \end{equation*}
 
 \paragraph{b)} Welche der folgenden Mengen von Ereignissen sind diskrete zeitliche Abläufe? Dazu sei $ A = \{a, b\} $.  
-
-% TODO Lösungen eintragen
+(=> muss Minimum haben + keinen Häufungspunkt)
+\begin{align*}
+& \alpha ) \{ (a, -3), (a, 25), (b, 2) \} \\
+& \beta ) \{ a \} \times \mathbb{N} \\
+& \gamma ) \{ a \} \times \mathbb{Z}^- \\
+& \delta ) \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} \} \cup \{ (a, o ) \} \\
+& \epsilon ) \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} , i < 100 \} \\
+& \zeta ) \{ (a, 3), (b, 5), (b, 3) \}
+\end{align*}
+ 
 \subsubsection*{Lösung}
+\begin{align*}
+& \alpha ) \checkmark \\
+& \beta ) \checkmark\\
+& \gamma ) \text{X} \text{, da kein Minimum} \\
+& \delta ) \text{X} \text{, da (a, 0) einzeln und Häufungspunkt ab (a, 1,...)} \\
+& \epsilon ) \checkmark \\
+& \zeta ) \text{X} \text{, da Häufungspunkt bei 3} \\
+\end{align*}
 
 \paragraph{c)} Geben Sie zu jedem diskreten zeitlichen Ablauf $ E $ aus Teilaufgabe $ b) $ die Ereignisse $E^1, E^2, E^3 $ an.
 
-% TODO Lösungen eintragen
 \subsubsection*{Lösung}
+\begin{align*}
+& \alpha ) E^1 = (a, -3) \text{, } E^2 = (b, 2) \text{, } E^3 = (a, 25) \\
+& \beta ) E^1 = (a, 1) \text{, } E^2 = (a, 2) \text{, } E^3 = (a, 3) \\
+& \epsilon ) E^1 = (a, 1 + \frac{1}{99}) \text{, } E^2 = (a, 1 + \frac{1}{98}) \text{, } E^3 = (a, 1 + \frac{1}{97}) \\
+\end{align*}
+
 
 \section{Einigkeit}
 Beweisen Sie, dass für alle Threads $ p_1 $ , $ p_2 $ folgende Aussagen äquivalent sind:
 
-% TODO Aussagen einfügen
+\begin{align*}
+& \alpha ) \pi_{A_1 \cap A_2} (E_1 \cup E_2) = E_1 \cap E_2\\
+& \beta ) \pi_{A_1 \cap A_2} (E_1 \oplus E_2) = \emptyset\\
+& \gamma ) \pi_{A_1} (E_2) = \pi_{A_2} (E_1) \\
+\end{align*}
 
-Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von hread $ p_i , i \in \{1,2\}$.\\
+
+
+Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von Thread $ p_i , i \in \{1,2\}$.\\
 Voraussetzung: Für alle $ e \in E_i $ gilt $aktion(e) \in A_i, i \in \{1,2\}$.\\
 Dann gilt: $ \pi_{A_i}(E_i) = E_i$
 \\
