@@ -206,6 +206,82 @@ Beweisen Sie, dass für alle Threads $ p_1 $, $ p_2 $ folgende Aussagen äquival
 Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von Thread $ p_i, i \in \{1, 2\}$.\\
 Voraussetzung: Für alle $ e \in E_i $ gilt $ aktion(e) \in A_i, i \in \{1, 2\} $.\\
 Dann gilt: $ \pi_{A_i} \left(E_i\right) = E_i $\\
-\\
-Beim nächsten mal!
+
+\subsubsection*{Lösung}
+
+zz. $\beta \Rightarrow \alpha$\\
+\begin{proof}
+\begin{align*}
+	& \pi_{A_1 \cap A_2}\left(E_1 \cup E_2\right) = \\
+    & \pi_{A_1 \cap A_2}\left(\left(E_1 \oplus E_2\right) \cup \left(E_1 \cap E_2\right)\right) = \\
+	& \pi_{A_1 \cap A_2}\left(E_1 \oplus E_2\right) \cup \pi_{A_1 \cap A_2}\left(E_1 \cap E_2\right) = \\
+	& \emptyset \cup \pi_{A_1 \cap A_2}\left(E_1 \cap E_2\right) =\\
+	& \pi_{A_1}\left(\pi_{A_2}\left(E_1 \cap E_2\right)\right) = \\
+	& \pi_{A_1}\left(E_1 \cap E_2\right) =
+	E_1 \cap E_2
+\end{align*} 
+\end{proof}
+
+zz. $\alpha \Rightarrow \beta$\\
+\begin{proof}
+	\begin{align*}
+		& \pi_{A_1 \cap A_2}\left(E_1 \oplus E_2\right) = \\
+		& \pi_{A_1 \cap A_2}\left(\left(E_1 \cup E_2\right) \setminus \left(E_1 \cap E_2\right)\right) = \\
+		& \pi_{A_1 \cap A_2} \left(E_1 \cup E_2\right) \setminus \pi_{A_1 \cap A_2} \left(E_1 \cap E_2\right) \overset{\alpha}{=} \\
+		& \left(E_1 \cap E_2\right) \setminus \left(E_1 \cap E_2\right) = \emptyset
+	\end{align*}
+\end{proof}
+
+zz. $\beta \Rightarrow \gamma$
+\begin{proof}
+	\begin{align*}
+		& (1) \pi_{A_1}\left(E_2\right) \setminus \pi_{A_2}\left(E_1\right) = \emptyset \iff \pi_{A_1}\left(E_2\right) \subseteq \pi_{A_2}\left(E_1\right) \\
+		& (2) \pi_{A_2}\left(E_1\right) \setminus \pi_{A_1}\left(E_2\right) = \emptyset \iff \pi_{A_2}\left(E_1\right) \subseteq \pi_{A_1}\left(E_2\right) \\ \\
+		& (1) \wedge (2) \\
+		& \iff \pi_{A_1}\left(E_2\right) \setminus \pi_{A_2}\left(E_1\right) \cup \pi_{A_2}\left(E_1\right) \setminus \pi_{A_1}\left(E_2\right) = \emptyset \\
+		& \iff \pi_{A_2}\left(E_2\right) \oplus \pi_{A_2}\left(E_1\right) = \emptyset \\ \\
+		& zz. \pi_{A_1 \cap A_2}\left(E_1 \oplus E_2\right) = \pi_{A_1}\left(E_2\right) \oplus \pi_{A_2}\left(E_1\right) \\
+		& \pi_{A_1 \cap A_2}\left(E_1 \oplus E_2\right) = \pi_{A_1}\left(\pi_{A_2}\left(E_1 \oplus E_2\right)\right) = \\
+		& \pi_{A_1}\left(\pi_{A_2}\left(E_1\right) \oplus E_2\right) = \pi_{A_1}\left(E_2\right) \oplus \pi_{A_1}\left(\pi_{A_2}\left(E_1\right)\right) = \\
+		& \pi_{A_2}\left(E_1\right) \oplus \pi_{A_1}\left(\pi_{A_1}\left(E_1\right)\right) = \\
+		& \pi_{A_2}\left(E_1\right) \oplus \pi_{A_1}\left(E_2\right)
+	\end{align*}
+\end{proof}
+
+zz. $\gamma \Rightarrow \beta$
+\begin{proof}
+	\begin{align*}
+		& \pi_{A_1 \cap A_2}\left(E_1 \oplus E_2\right) = \pi_{A_1}\left(\pi_{A_2}\left(E_1 \oplus E_2\right)\right) = \\
+		& \pi_{A_1}\left(\pi_{A_2}\left(E_1\right) \oplus E_2\right) = \pi_{A_1}\left(\pi_{A_1}\left(E_2\right) \oplus E_2\right) \overset{\gamma}{=} \\
+		& \pi_{A_1}\left(E_2\right) \oplus \pi_{A_1}\left(E_2\right) = \emptyset
+	\end{align*}
+\end{proof}
+
+\subsection{Aufgabe:}
+\paragraph{a)} Beweisen Sie, dass \glqq $\rightarrow$\grqq{} eine Wohlordnung (irreflexiv, transitiv, total, fundiert) ist.
+
+\subsection{Lösung}
+\paragraph{$\rightarrow$ irreflexiv} Beweis durch Wiederspruch\\
+Annahme: e $\rightarrow$ e gilt. Nach Definition von \glqq $\rightarrow$\grqq{} gilt zeit(e) < zeit(e).\\ Widerspruch zu < irreflexiv. 
+
+\paragraph{$\rightarrow$ transitiv}
+a $\rightarrow$ b und b $\rightarrow$ c, dann a $\rightarrow$ c\\
+zeit(a) < zeit(b) und zeit(b) < zeit(c)\\
+$\Rightarrow$ zeit(a) < zeit(b) < zeit(c) $\iff$ zeit(a) < zeit(c)\\ 
+$\Rightarrow$ a $\rightarrow$ c, wegen Transitivität <
+
+\paragraph{$\rightarrow$ total}
+Für Ereignisse $e_1 \neq e_2$ gilt $e_1 \rightarrow e_2$ oder $e_2 \rightarrow e_1$ \\
+Seien $e_1, e_2; e_1 \neq e_2$ Ereignisse\\
+Dann zeit($e_1$) < zeit($e_2$) oder zeit($e_2$) < zeit($e_1$) oder zeit($e_1$) = zeit($e_2$)\\
+\glqq <\grqq{} ist total.\\
+Wenn zeit($e_1$) = zeit($e_2$), dann $e_1 = e_2$ nach Vorraussetzung (idealisierende Annahme 3). Widerspruch zu $e_1 \neq e_2$. Also entweder zeit($e_1$) < zeit($e_2$) damit $e_1 \rightarrow e_2$ oder zeit($e_2$) < zeit($e_1$) damit $e_2 \rightarrow e_1$.
+
+\paragraph{$\rightarrow$ fundiert}
+zz. gibt keine unendliche \glqq $\leftarrow$\grqq-Kette. Beweis durch Widerspruch.\\
+Annahme: $\left(e_i\right)_{i \in \mathbb{N}}$ sei unendliche \glqq $\leftarrow$\grqq-Kette. \\
+Damit $e_i \leftarrow e_{i + 1}$ für alle $i \in \mathbb{N}$. \\
+Damit zeit($e_i$) > zeit($e_{i + 1}$) für alle $i \in \mathbb{N}$ wegen Definition von $\rightarrow$. \\
+Damit ist $\left(zeit\left(e_i\right)\right)_{i \in \mathbb{N}}$ eine unendliche  \glqq $\leftarrow$\grqq-Kette. \\
+Widerspruch zu: < ist fundiert auf $\mathbb{N}$.
 \end{document}
