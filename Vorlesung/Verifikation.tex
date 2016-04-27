@@ -20,7 +20,7 @@ Beispiel: Schlacht bei Isis 333 v. Chr. $\rightarrow$ Aktion, Zeitpunkt
 	\end{description}
 \item Ein Ereignis hat die Dauer Null. Einen Zeitraum kann man darstellen durch die Ereignisse “Ende des Zeitraums“.
 \item Gleichzeitige Ereignisse sind ausgeschlossen, d.h. zwei Ereignisse, die die zur gleichen Zeit stattfinden, sind gleich\\
-$zeit(e)1 = zeit(e2) \leftrightarrow e1 = e2 $
+$zeit(e)1 = zeit(e2) \Leftrightarrow e1 = e2 $
 \end{enumerate}
 
 \begin{description}
@@ -56,7 +56,7 @@ Falls $ R $ irreflexiv und transitiv ist, dann ist $ R $ auch azyklisch.
 Für einen nicht-leere Geschichte $ E $ sei $ \min \ E $ definiert als das kleinste Element von $ E $ bezüglich $ \rightarrow $, d.h. dasjenige $ e \in E $ für das gilt:
 
 \begin{equation*}
-	\forall f \in E\setminus{e}: e \rightarrow f
+	\forall f \in E\setminus\{e\}: e \rightarrow f
 \end{equation*}
 
 Tipp: Relation als Graph vorstellen mit Wegen.
@@ -128,7 +128,96 @@ Unendliche Folge $ (a, b, b, a, b, b, ...) $ als Funktion $ f: \mathbb{N} \right
 $ A^k $ k-Tupel von Elementen aus A und \\
 $ {i \in \mathbb{N} | i \leq k} \rightarrow A $ Folgen der Länge k werden miteinander identifiziert.
 
+$A^k$ k-Tupel von Elementen aus A und ${i \in \mathbb{N} | i \leq k} \rightarrow$ A Folgen der Länge k werden miteinander identifiziert.
+
+Um endliche und unendliche Abläufe einheitlich zu modellieren, bildet man die \emph{Positionenmenge} $\mathbb{N}_\infty := \mathbb{N} \cup {\infty}$.\\
+Vergleich $\leq$ auf $\mathbb{N}_\infty$ sei definiert durch
+\begin{equation*}
+m \leq n \Leftrightarrow (n = \mathbb{N}_0 \lor  m, n \in \mathbb{N}_0 \land m \leq n (auf \mathbb{N}_0).\\
+\end{equation*}
+Vergleich $m \leq n$ für m, n $\in \mathbb{N}_0$ liefert dasselbe bei $\leq$ auf $\mathbb{N}_0$ wie bei $\leq$ auf $\mathbb{N}_0$.
+\\
+$\le$ auf $\mathbb{N}_\infty$ sei definiert durch $m \le n \Leftrightarrow m \leq n \land m \neq n$.
+Es gilt: $\le$ auf $\mathbb{N}_\infty$ ist eine Fortsetzung von $\le$ auf $\mathbb{N}_0$ und eine Wohlordnung.\\
+Bemerkung: $\leq$ lässt sich weiter fortsetzen: Ordinalzahlen.\\
+\\
+\subsubsection*{Aktionenfolgen}
+Sei A eine Aktionenmenge. Dann sei $A^* := \cup_{\substack{k \in \mathbb{N}_0}} A^k$.
+$A^\infty := A^* \cup (\mathbb{N} \rightarrow A)$, wobei $A^k$ eine endliche Folge ist und $(\mathbb{N} \rightarrow A$ unendliche Folgen.
+Es gilt $A^k = \cup_{\substack{k \in \mathbb{N}_\infty}} ({i \in \mathbb{N} | i \leq k} \rightarrow A)$.
+Die Länge $\#_x$ einer Aktionenfolge x ist definiert durch $\#_k = \begin{cases}
+\infty&\text{,falls $x \in (\mathbb{N} \rightarrow A)$}\\
+k&\text{, falls $x \in A^k$}
+\end{cases}$
+
+Es gilt $\#_x \in \mathbb{N}_\infty$.
+
+$\leq_{pre} \subseteq A^\infty \times A^\infty$ sei definiert durch $x \leq_{pre} y \Leftrightarrow \#_x \leq \#_y \land \forall 1 \leq i \leq \#_x: x(i) = y(i)$.\\
+Beispiel: \\
+x = (a, b, a, a)\\
+y = (a, b, a, a, b, a, ...)\\
+x ist ein Anfangsstück (auch Präfix, engl. prefix) von y\\
+Es gilt $\leq_{pre}$ ist eine Ordnungsrelation (d.h. $\leq_{pre}$ ist reflexiv, transitiv, antisymmetrisch).
+$\le_{pre} y \Leftrightarrow x \leq_{pre} y \land x \neq y$. strikter Anteil von $\leq_{pre}$
+Es gilt: $\le_{pre}$ ist eine Striktordnung (d.h. irreflexiv, transitiv)
+\\
+\subsubsection*{Operationen auf Aktionenfolgen}
+\begin{description}
+	\item{rest} $A^\infty \setminus \{\varepsilon\} \rightarrow A^\infty$, wobei \{$\varepsilon$\} leere Aktionenfolge (= Aktionenfolge der Länge 0), ist definiert durch $rest(x)(i) = x(i+1)$. Es gilt: $\#_{rest(x)} = \infty$ falls $\#_x = \infty$ und $\#_{rest(x)} = \#_x - 1$ sonst
+	\item {Konkatenation (Hintereinanderstellen)} von Aktionenfolgen ist definiert durch $(x \cdot y)(i) =
+	\begin{cases}
+	x(i) &,falls i \leq \#_x \\
+	y(i-\#_x)&,sonst
+	\end{cases}$. Der zweite Fall tritt nicht bei $\#_x = \infty$ auf. Es gilt: $x \cdot y = x$, falls $\#_x = \infty$.\\
+	\item{Projektion} $\pi_B A^\infty \rightarrow A^\infty$ auf Aktionenmenge B ist rekursiv definiert durch:\\
+\begin{equation*}
+	\pi_B(x) = \begin{cases}
+		\varepsilon &\text{, falls $x = \varepsilon$} \\
+		x(1)\cdot \pi_B(rest(x)) &\text{, falls $0 < \#_x < \infty und x(1) \in B $}\\
+		\pi_B(rest(x)) &\text{, falls $0 < \#_x < \infty und x(1) \notin B$ }\\
+		sup{\pi_B(y) | y \le_{pre} x} &\text{, sonst (Supremum)}
+	\end{cases}
+\end{equation*}
+\end{description}
+Beispiel:
+x = (a, b, c, a, b, c, ...)
+B = {a, b}
+Behauptung: $\pi_B$ = (a, b, a, b, ...)
+Beweis: Es gilt $\#_x = \infty$. Damit $\pi_B(x) = sup{\pi_B(y) | y \le_{pre} x}$. \\
+$y_0 := \varepsilon$ $y_0 <_{pre} x$. $\pi_B(y_0) = \varepsilon$(leere Allausage ist immer wahr, leere Folge hat keine Komponenten) \\
+$y_1 := (a)$ $y_1 <_{pre} x$ $\pi_B(y_1) = (a)$
+$y_2 := (a, b)$ $\pi_B(y_2) = (a, b)$
+$y_3 := (a, b, c)$ $\pi_B(y_3) = (a, b)$
+$y_4 := (a, b, c, a)$ $\pi_B(y_4) = (a, b, a)$
+\\
+Die Anzahl der Vorkommen $\#_B(x)$ von Aktionen aus der Menge B in $x \in A^{\infty}$ ist definiert durch $\#_B(x) = \#_{\pi_B(x)}$.
+\\
+Seien $a \in A, i \in \mathbb{N}, x \in A^{\infty}$. Dann ist die Position des i-ten Vorkommens von einer Aktion aus B in x \emph{$B^i_x$} definiert durch  $B^i_x = \#_y+1, falls y \cdot (a) \leq_{pre}x und a \in B und \#_B(y) = i - 1$.\\
+Wohldefiniertheit ist hier zu zeigen.\\
+
+\subsubsection*{Unendliche Wiederholung}
+Für $x \in A^k$ ist \emph{$x^{\infty}$} definiert durch $x^{\infty}(i) = x((i-1)mod k + 1)$.\\
+$(i-1)mod k + 1$ ist wie $i mod k$, außer wenn i ein Vielfaches von k ist:\\
+$(i-1)mod k + 1$ liefert dann k statt 0.\\
+\\
+y ist ein Zustand der Aktionenfolge x (y ist Vergangenheit von x), wenn $y \leq_{pre} x$ und $\#_y \in \mathbb{N}_0$ also endlich.
+
 \section{Faire Mischung}
+$x \in (A \cup B)^\infty$ heißt eine faire Mischung (engl. fair merge) von $y \in A^\infty$ und $z \in B^\infty$, wenn gilt
+\begin{equation*}
+\pi_A(x) = y \text{ und } \pi_B(x) = z
+\end{equation*}
+
+Bemerkung: "`fair"' weil weder y noch z zu kurz kommen.\\
+Bemerkung: Statt "`faire Mischung"' sagt man auch "`Verschränkung"' oder "`shuffle"' bei (Zeichenreihen).\\
+
+Beispiel:\\
+Sei $y = (0, 1)^\infty = (0, 1, 0, 1, 0, ...)$ und $z = (2,3)^\infty = (2, 3, 2, 3, 2, ...)$ mit $A = {0, 1}$ und $B = {2, 3}$. Dann ist $x_1 = (0, 2, 1, 3, 0, 2, 1, 3, ...)$ eine faire Mischung, weil \\
+$(0,  1,  0,  1, ...) = y = \pi_A(x)$\\
+$(2, 3, 2, 3, ...) = z = \pi_B(x)$\\.
+Spezialfall $x_1$ heißt auch "`perfect shuffle"'.\\
+
+Aber auch $x_2 = (2, 0, 1, 3, 2, 0, 1, 3, ...)$ faire Mischung. x braucht nicht periodisch zu sein oder y und z mit gleicher Geschwindigkeit zu behandeln.
 
 \section{Sicherheits- und Liveness-Eigenschaften}
 
