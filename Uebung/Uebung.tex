@@ -7,13 +7,17 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{stmaryrd}
 
 \DeclareMathOperator{\anz}{anz}
+\DeclareMathOperator{\zanf}{anfang}
+\DeclareMathOperator{\zend}{ende}
 
 \setlength\parindent{0pt}
 
 \title{Übung zur Vorlesung Thread Programmierung}
 \subtitle{Alle Programmieraufgaben sind auch im GitHub-Repository \url{https://github.com/lukaswerner/JavaConcurrency} zu finden.}
+\author{}
 \date{}
 
 \begin{document}
@@ -163,17 +167,14 @@ Also gilt:\\
 \end{cases}
 \end{equation*}
 
-
-
 \paragraph{b)} Finden Sie einen geschlossenen Ausdruck für $ \anz^*(n) $.
 \paragraph{c)} Schätzen Sie die Größenordnung von $ \anz^*(n) $.
 b) sowie c) kann auch Prof. Geser nicht lösen, wächst aber in etwa im Quadrat der Fakultät
 
-
-\section{zeitliche Abläufe}
+\section{Zeitliche Abläufe}
 
 \paragraph{a)} Geben Sie zu dem folgenden zeitlichen Ablauf den passenden seriellen Ablauf (= Aktionsfolge) an:
-$ \{(a, 5.3), (b, 3.7), (c, 3.2), (a, 1.7), (a, 2.1), (b, 2.5)\}$
+$ \{(a, 5.3), (b, 3.7), (c, 3.2), (a, 1.7), (a, 2.1), (b, 2.5)\} $
 
 \subsubsection*{Lösung}
 \begin{equation*}
@@ -188,33 +189,32 @@ c & \text{sonst}
 \paragraph{b)} Welche der folgenden Mengen von Ereignissen sind diskrete zeitliche Abläufe? Dazu sei $ A = \{a, b\} $.  
 (=> muss Minimum haben + keinen Häufungspunkt)
 \begin{align*}
-& \alpha ) \{ (a, -3), (a, 25), (b, 2) \} \\
-& \beta ) \{ a \} \times \mathbb{N} \\
-& \gamma ) \{ a \} \times \mathbb{Z}^- \\
-& \delta ) \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} \} \cup \{ (a, o ) \} \\
-& \epsilon ) \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} , i < 100 \} \\
-& \zeta ) \{ (a, 3), (b, 5), (b, 3) \}
+& \alpha) \ \{ (a, -3), (a, 25), (b, 2) \} \\
+& \beta) \ \{ a \} \times \mathbb{N} \\
+& \gamma) \ \{ a \} \times \mathbb{Z}^- \\
+& \delta) \ \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} \} \cup \{ (a, o ) \} \\
+& \epsilon) \ \{ (a, 1+ \frac{1}{i} | i \in \mathbb{N} , i < 100 \} \\
+& \zeta) \ \{ (a, 3), (b, 5), (b, 3) \}
 \end{align*}
  
 \subsubsection*{Lösung}
 \begin{align*}
-& \alpha ) \checkmark \\
-& \beta ) \checkmark\\
-& \gamma ) \text{X} \text{, da kein Minimum} \\
-& \delta ) \text{X} \text{, da (a, 0) einzeln und Häufungspunkt ab (a, 1,...)} \\
-& \epsilon ) \checkmark \\
-& \zeta ) \text{X} \text{, da Häufungspunkt bei 3} \\
+& \alpha) \ \checkmark \\
+& \beta) \ \checkmark\\
+& \gamma) \ \text{X} \text{, da kein Minimum} \\
+& \delta) \ \text{X} \text{, da (a, 0) einzeln und Häufungspunkt ab (a, 1,...)} \\
+& \epsilon) \ \checkmark \\
+& \zeta) \ \text{X} \text{, da Häufungspunkt bei 3} \\
 \end{align*}
 
 \paragraph{c)} Geben Sie zu jedem diskreten zeitlichen Ablauf $ E $ aus Teilaufgabe $ (b) $ die Ereignisse $E^1, E^2, E^3 $ an.
 
 \subsubsection*{Lösung}
 \begin{align*}
-& \alpha ) E^1 = (a, -3) \text{, } E^2 = (b, 2) \text{, } E^3 = (a, 25) \\
-& \beta ) E^1 = (a, 1) \text{, } E^2 = (a, 2) \text{, } E^3 = (a, 3) \\
-& \epsilon ) E^1 = (a, 1 + \frac{1}{99}) \text{, } E^2 = (a, 1 + \frac{1}{98}) \text{, } E^3 = (a, 1 + \frac{1}{97}) \\
+& \alpha) \ E^1 = (a, -3) \text{, } E^2 = (b, 2) \text{, } E^3 = (a, 25) \\
+& \beta) \ E^1 = (a, 1) \text{, } E^2 = (a, 2) \text{, } E^3 = (a, 3) \\
+& \epsilon) \ E^1 = \left(a, 1 + \frac{1}{99}\right) \text{, } E^2 = \left(a, 1 + \frac{1}{98}\right) \text{, } E^3 = \left(a, 1 + \frac{1}{97}\right) \\
 \end{align*}
-
 
 \section{Einigkeit}
 
@@ -228,6 +228,38 @@ Beweisen Sie, dass für alle Threads $ p_1 $, $ p_2 $ folgende Aussagen äquival
 Dabei sei $ A_i $ das Prozessalphabet von Thread $ p_i $ und $ E_i $ der zeitliche Ablauf von Thread $ p_i, i \in \{1, 2\}$.\\
 Voraussetzung: Für alle $ e \in E_i $ gilt $ aktion(e) \in A_i, i \in \{1, 2\} $.\\
 Dann gilt: $ \pi_{A_i} \left(E_i\right) = E_i $\\
-\\
-Beim nächsten mal!
+
+% TODO abtippen
+
+\subsubsection*{Aufgabe}
+
+\paragraph{a)} Beweisen Sie, dass $ \rightarrow $ eine Wohlordnung ist
+
+\paragraph{b)} Welche der Eigenschaften irreflexiv, transitiv, total und fundiert gelten auch für $ \rightarrow $ auf Zeiträumen?
+
+\subsubsection*{Lösung}
+\begin{labeling}{xxxxxxxxxx}
+	\item[irreflexiv:] $ A \rightarrow A $ gilt nicht, denn Ende von $ A $ kommt immer \emph{nach} Anfang von $ A $. Deswegen: irreflexiv
+	\item[transitiv:] Sei $ A \rightarrow B $ und $ B \rightarrow C $.\\
+	Wenn $ A $ Zeitraum, dann $ \zanf(A) \rightarrow \zend(A) $.\\
+	$ A \rightarrow B \Leftrightarrow \zend(A) \rightarrow \zanf(B) $\\
+	$ B \rightarrow C \Leftrightarrow \zend(b) \rightarrow \zanf(C) $\\
+	Damit $ \zend(A) \rightarrow \zanf(B) \underset{\text{weil B Zeitraum}}{\longrightarrow} \zend(B) \rightarrow \zanf(C) $\\
+	Weil $ \rightarrow $ transitiv auf Ereignissen ist, folgt $ \zend(A) \rightarrow \zanf(C) $, also $ A \rightarrow C $. Also ist $ \rightarrow $ transitiv auf Zeiträumen.
+	% TODO: Bildchen von verschiedenen Überlappungen einfügen
+	\item[fundiert:] Behauptung: $ \rightarrow $ ist fundiert auf Zeiträumen\\
+	Beweis durch Widerspruch\\
+	Annahme: $ \left(A_i\right)_{i \in \mathbb{N}} $ unendliche $ \rightarrow $ - Kette\\
+	Dann gilt für alle $ i \in \mathbb{N} $: $ A_i \leftarrow A_{i + 1} $, d.h. $ \zend(A_{i + 1}) \rightarrow \zanf(A_i) $.\\
+	Dann $ \zanf(A_i) \leftarrow \zend(A_{i + 1}) \underset{\text{weil } A_{i + 1} \text{ Zeitraum}}{\leftarrow} \zanf(A_{i + 1}) $\\
+	Dann $ \zanf(A_i) \leftarrow \zanf(A_{i + 1}) $ wegen Transitivität von $ \rightarrow $\\
+	Also $ \left(\zanf(A_i)\right)_{i \in \mathbb{N}} $ unendliche $ \rightarrow $ - Kette auf Ereignissen.\\
+	Widerspruch zu $ \rightarrow $ fundiert auf Ereignissen. $ \lightning $\\
+	Also ist $ \rightarrow $ fundiert auf Zeiträumen.
+\end{labeling}
+
+\section{Einschub: Threads in Haskell (kein Prüfungsstoff)}
+
+% TODO abtippen
+
 \end{document}
