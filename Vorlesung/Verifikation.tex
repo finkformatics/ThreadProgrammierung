@@ -220,5 +220,115 @@ Spezialfall $x_1$ heißt auch "`perfect shuffle"'.\\
 Aber auch $x_2 = (2, 0, 1, 3, 2, 0, 1, 3, ...)$ faire Mischung. x braucht nicht periodisch zu sein oder y und z mit gleicher Geschwindigkeit zu behandeln.
 
 \section{Sicherheits- und Liveness-Eigenschaften}
+\begin{description}
+\item {Spezifikation} Beschreibung der gewünschten Eigenschaften des Systems aus Anwendersicht
+\item {Verifikation} Nachweis, dass das System seine Spezifikation erfüllt
+\end{description}
+Spezifikation eines sequentiellen Programms $f: Z \rightarrow Z$, wobei $Z$ die Menge der Programmzustände sei:
+$pre_f(z) \Rightarrow post_f(f(z)), z \in Z$.
+\begin{description}
+\item {$z$} alter Zustand
+\item {$f(z)$} neuer Zustand
+\item {$pre_f: Z \rightarrow \mathbb{B}$} Vorbedingung
+\item {$post_f: Z \rightarrow \mathbb{B}$} Nachbedingung
+\end{description}
+
+Beispiel:\\
+\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl.jpeg}\\
+Sequentiell: Prozedur wie einzelne Aktion behandeln\\
+\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl2.jpeg}\\
+Problem bei Nebeneinanderablauf: siehe Zeitstrahl, Prozedurausführungen können sich überlappen. Die Ausführung von f und die Ausführung von g können sich über gemeinsame Objekt gegenseitig beeinflussen.\\
+Fazit: Das Verhalten einer Prozedur f ist durch $pre_f$ und $post_f$ nicht mehr genau genug beschreibbar.\\
+\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl3.jpeg}\\
+Vereinfachungsmöglichkeiten:\\
+\begin{itemize}
+\item Aktionen, die keine gemeinsamen Objekte betreffen können zusammengefasst werden zu einer Aktion
+\item Kritische Bereiche können zusammengefasst werden zu einer Aktion
+\end{itemize}
+
+\begin{description}
+\item {Sicherheitseigenschaft (auch: Konsistenz, Invariante, engl. safety property)} Eigenschaften, die für jeden Zustand gelten soll und die sich nur auf vergangene Zustände bezieht.
+\item {Liveness-Eigenschaft (auch: Fortschritt, engl. liveness property)} alle übrigen Eigenschaften von Abläufen
+\end{description}
+Grund für die Unterscheidung:
+\begin{enumerate}
+\item Sicherheitseigenschaften sind einfacher zu beweisen.
+\item Die meisten Eigenschaften sind Sicherheitseigenschaften.
+\end{enumerate}
+Intuitiv: Eine Sicherheitseigenschaft garantiert, dass nichts unerwünschtes geschieht ("`Verbot"'). Eine Liveness-Eigenschaft garantiert, dass \emph{schließlich} etwas Erwünschtes geschieht ("`Versprechen"'). Ein Thread, der nur wartet, erfüllt alle Sicherheitseigenschaften: "`Wer schläft, sündigt nicht"'.\\
+Bemerkung: Zu sequentiellen Programmen ist partielle Korrektheit eine Sicherheitseigenschaft und Termination eine Liveness-Eigenschaft.
+
+\subsection*{Beweismethode für eine Sicherheitseigenschaft}
+"`Für jeden Zustand gilt S"':
+\begin{enumerate}
+\item S gilt für den Startzustand.
+\item S bleibt bei jedem Zustandsübergang erhalten, d.h. wenn S im alten Zustand gilt, dann auch im neuen.
+\end{enumerate}
+Variante:
+\begin{enumerate}
+\item S gilt nach Initialisierung.
+\item S bleibt außerhalb von kritischen Bereich erhalten.
+\item Wenn S beim Betreten eines krit. Bereiches gilt, dann auch beim Verlassen.
+\end{enumerate}
+Sperren sollen folgende Eigenschaften erfüllen:
+\begin{enumerate}
+\item
+	\begin{description}
+		\item {Gegenseitiger Ausschluss} Die kritischen Bereiche zweier Threads überlappen nicht.\\Sicherheitseigenschaft: "`In jedem Zustand ist verboten, dass zwei Threads im krit. Bereich sind"'
+	\end{description}
+\item
+	\begin{description}
+		\item {Verklemmungsfreiheit} Wenn ein Thread die Sperre erwerben möchte, dann gibt es einen Thread, der die Sperre bekommt.\\
+		Liveness-Eigenschaft: "`Wenn die Sperre zugeteilt werden soll, wird sie schließlich zugeteilt"'
+	\end{description}
+\item
+	\begin{description}
+		\item {Fairness (auch: kein Verhungern)} Jeder Thread, der eine Sperre erwerben möchte, bekommt sie schließlich auch.\\
+	\end{description}
+\end{enumerate}
+Es gilt: Aus Fairness folgt Verklemmungsfreiheit.
+\\
+Bedingungen für Prozeduraufrufe im Zusammenhang mit nebeneinander laufenden Threads
+\begin{enumerate}
+\item
+	\begin{description}
+		\item {Bounded wait-free} Jeder Prozeduraufruf terminiert nach einer beschränkten Anzahl von Schritten.
+	\end{description}
+\item
+	\begin{description}
+		\item {Wait-free} Jeder Prozeduraufruf terminiert, d.h. bleibt nicht in einer Warteschleife hängen. (Liveness-Eigenschaft)
+	\end{description}
+\item
+	\begin{description}
+		\item {Lock-free} Unendlich viele Aufrufe terminieren. (Liveness-Eigenschaft)
+	\end{description}
+\end{enumerate}
 
 \section{Modellierung}
+Ausdrucksformen für Sicherheits- und Liveness-Eigenschaften:
+\begin{itemize}
+\item Formale Sprachen, insbesondere reguläre Ausdrücke
+\item Prozessalgebra
+\item Temporale Logik: linear oder verzweigend
+\item Prädikatenlogik mit Abläufen als Objekten
+\end{itemize}
+
+\subsection*{Beispiel: Modellieren von Sperren}
+Aktionen:
+\begin{description}
+	\item {$ant_i$} Thread i beantragt die Sperre
+	\item {$bel_i$} Thread i belegt die Sperre (betritt den krit. Bereich)
+	\item {$fr_i$} Thread i gibt die Sperre frei (verlässt den krit. Bereich)
+	\item {$Bel:=\{bel_i | i \in I\}$} die Sperre wird belegt (I ist Menge der Threads)
+	\item {$Fr:=\{fr_i | i \in I\}$} die Sperre wird freigegeben
+\end{description}
+\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl4.jpeg}\\
+Gegenseitiger Ausschluss
+\begin{enumerate}
+	\item Mit regulären Ausdrücken\\Für jeden Ablauf x gilt: Für jedes endliche Anfangsstück y von x gilt:\\
+	Die Projektion von y auf die Aktionenmenge $Bel \cup Fr$ ist in der Sprache $(Bel Fr)^*(Bel + \epsilon) = PRE((Bel Fr)^*)$ ("`Präfixabschluss"')\\
+	Sei $Ant:=\{ant_i | i \in I\}$ und $A:=Ant \cup Bel \cup Fr$. Dann kann man gegenseitigen Ausschluss als Formel angeben: $\forall x \in A^{infty}: \forall y \leq_{pre} x: \#_y <_\infty \Rightarrow \pi_{Bel \cup Fr}(y) \in PRE((Bel Fr)^*)$ Ausgeschlossen ist z.B. der Ablauf $bel_1 bel_1 fr_2$\\
+	Präfixablauf definiert durch $PRE(x)= \{y \in A^* | y \leq_{pre} x \}$.
+\end{enumerate}
+
+Bemerkung: Sicherheitseigenschaften kann man immer mit Präfixabschluss beweisen.
