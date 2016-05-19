@@ -324,11 +324,52 @@ Aktionen:
 \end{description}
 \includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl4.jpeg}\\
 Gegenseitiger Ausschluss
-\begin{enumerate}
-	\item Mit regulären Ausdrücken\\Für jeden Ablauf x gilt: Für jedes endliche Anfangsstück y von x gilt:\\
-	Die Projektion von y auf die Aktionenmenge $Bel \cup Fr$ ist in der Sprache $(Bel Fr)^*(Bel + \epsilon) = PRE((Bel Fr)^*)$ ("`Präfixabschluss"')\\
-	Sei $Ant:=\{ant_i | i \in I\}$ und $A:=Ant \cup Bel \cup Fr$. Dann kann man gegenseitigen Ausschluss als Formel angeben: $\forall x \in A^{infty}: \forall y \leq_{pre} x: \#_y <_\infty \Rightarrow \pi_{Bel \cup Fr}(y) \in PRE((Bel Fr)^*)$ Ausgeschlossen ist z.B. der Ablauf $bel_1 bel_1 fr_2$\\
-	Präfixablauf definiert durch $PRE(x)= \{y \in A^* | y \leq_{pre} x \}$.
-\end{enumerate}
-
+\subsection*{1. Mit regulären Ausdrücken}
+Für jeden Ablauf x gilt: Für jedes endliche Anfangsstück y von x gilt:\\
+Die Projektion von y auf die Aktionenmenge $Bel \cup Fr$ ist in der Sprache $(Bel Fr)^*(Bel + \epsilon) = PRE((Bel Fr)^*)$ ("`Präfixabschluss"')\\
+Sei $Ant:=\{ant_i | i \in I\}$ und $A:=Ant \cup Bel \cup Fr$. Dann kann man gegenseitigen Ausschluss als Formel angeben: $\forall x \in A^{infty}: \forall y \leq_{pre} x: \#_y <_\infty \Rightarrow \pi_{Bel \cup Fr}(y) \in PRE((Bel Fr)^*)$ Ausgeschlossen ist z.B. der Ablauf $bel_1 bel_1 fr_2$\\
+Präfixablauf definiert durch $PRE(x)= \{y \in A^* | y \leq_{pre} x \}$.
 Bemerkung: Sicherheitseigenschaften kann man immer mit Präfixabschluss beweisen.
+Formel für gegenseitigen Ausschluss kompakter: $\pi_{Bel \cup Fr}(PRE(x)) \subseteq PRE((Bel Fr)^*)$
+Zugelassen ist z.B. der Ablauf $bel_1 fr_2 ant_1$. Ausgeschlossen ist z.B. $bel_1 bel_1 fr_2$.
+Falls $y \leq_{pre} x$ und $x \in X$ , dann $y \in PRE(x)$.
+$X \subseteq A^*$ ist abgeschlossen untrer Pfäfixen, falls $PRE(X) \subseteq X$. Es gilt: $PRE(X)$ ist abgeschlossen unter Präfixen
+\subsection*{2. Mit Formeln der Prädikatenlogik}
+$\forall y \in PRE(x) \cap A^*: 0 \leq \#_{Bel}y - \#_{Fr} \leq 1$.
+Oder: $\forall i \in \mathbb{N}: Bel_x^i \leq Fr_x^i \leq Bel_x^{i+1}$
+Oder $\forall k,l \in \mathbb{N}. fr_{i x}^k < bel_{j x}^l \lor fr_{j x}^l < bel_{i x}^k$
+
+\subsection*{3. Mit Zustandsautomaten}
+siehe Bild
+
+\subsection*{4. Lineare Temporale Aussagenlogik}
+Hier: lineare Temporale Aussagenlogik.
+Syntax: Formeln sind aufgebaut mit
+\begin{itemize}
+	\item Konstanten true, false
+	\item boolsche Variablen
+	\item Verknüpfungen $\land, \lor, \neg$ (weitere möglich: $\Rightarrow, \Leftrightarrow$, endliche Quantoren $\bigvee_{i \in M}, \bigwedge_{i \in M}$)
+	\item temporale Operatoren
+	\begin{itemize}
+		\item $o$ next: im nächsten Zustand gilt
+		\item $\square$ always: in allen zukünftigen Zuständen gilt
+		\item $\diamond$ eventually: in mindestens einem Zustand gilt
+	\end{itemize}
+\end{itemize}
+
+Beispiel: Wer A sagt, muss auch B sagen: $\square(A \Rightarrow \diamond B)$ \\
+Never change a running system: $\square(R \Rightarrow o R)$
+Semantik
+\begin{itemize}
+	\item $\sigma$ sei ein serieller Ablauf
+	\item j sei eine natürliche Zahl
+	\item p sei eine temporal-logische Formel
+\end{itemize}
+
+$(\sigma, j) \models_{erfüllt} p$ Formel p gilt an Position j im Ablauf  $\sigma$\\
+$(\sigma, i) \models p \land q \Leftrightarrow (\sigma, i) \models p \land (\sigma, i) \models q$ usw. für andere aussagenlogische Formeln\\
+Rekursive Definition:\\
+$(\sigma, j) \models o p \leftrightarrow (\sigma, j +1) \models p$\\
+$(\sigma, j) \models \square p \leftrightarrow \forall k \geq j: (\sigma, k) \models p$\\
+$(\sigma, j) \models \diamond p \leftrightarrow \exists k \geq j: (\sigma, k) \models p$
+
