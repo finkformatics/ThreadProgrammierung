@@ -1,0 +1,110 @@
+% TODO: Rein mergen!
+Formel für gegenseitigen Ausschluss kompakter:
+
+$ \pi_{Bel \cup Fr} (PRE(x)) \subseteq PRE((Bel Fr)^*) $
+
+Zugelassen ist z.B. der Ablauf
+
+$ bel_1 fr_2 ant_1 $
+
+Ausgeschlossen ist z.B. $ bel_1 bel_1 fr_2 $
+
+Falls $ y \leq_{pre} x $ und $ x \in X $, dann $ y \in PRE(X) $.
+
+$ X \subseteq A^* $ ist \emph{abgeschlossen unter Präfixen}, falls $ PRE(X) \subseteq X $.
+
+Es gilt: $ PRE(X) $ ist abgeschlossen unter Präfixen.
+
+Gegenseitiger Ausschluss mit Formeln der Prädikatenlogik:
+
+\begin{equation*}
+\forall y \in PRE(x) \cap A^* : 0 \leq \#_{Bel}y - \#_{Fr}y \leq 1
+\end{equation*}
+
+\begin{center}
+\begin{tabular}{c | c}
+$ \#_{Bel}y - \#_{Fr}y $ & Bedeutung \\
+0 & frei \\
+1 & belegt
+\end{tabular}
+\end{center}
+
+\begin{equation*}
+\forall i \in \mathbb{N} : Bel_x^i \leq Fr_x^i \leq Bel_x^{i + 1}
+\end{equation*}
+\begin{equation*} % TODO: Hier soll eigentlich beispielsweise k über x stehen
+\forall k, l \in \mathbb{N}. fr_{i\ x}^k < bel_{j\ x}^l \vee fr_{j\ x}^l < bel_{i\ x}^k
+\end{equation*}
+
+Mit Zustandsautomaten:
+
+% TODO: 0 ist Anfangszustand, es gibt auch 1 als Zustand. 0 mappt auf 1 mit Bel, 1 mappt auf 0 mit Fr
+
+\subsubsection*{Lineare temporale Logik}
+Hier: Lineare temporale Aussagenlogik.
+
+Syntax: Formeln sind aufgebaut mit:
+
+\begin{itemize}
+	\item true, false
+	\item Variablen
+	\item Verknüpfungen $ \wedge, \vee, \neg $ (weitere Verknüpfungen können damit definiert werden, z.B. $ \Rightarrow, \Leftrightarrow, \oplus $. Endliche Quantoren $ \wedge_{i \in M} $ "`für alle $ i \in M $"', $ \vee_{i \in M} $ "`es existiert $ i \in M $"' mit M endlich.)
+	\item temporale Operatoren
+	\begin{itemize}
+		\item $ \bigcirc $ "`next"' "`im nächten Zustand gilt"'
+		\item $ \square $ "`always"' "`in allen zukünftigen Zuständen gilt"'
+		\item $ \diamond $ "`eventually"' "`in mind. einem zukünftigen Zustand gilt"' 
+	\end{itemize}
+\end{itemize}
+
+Beispiel: "`Wer A sagt, muss auch B sagen"'
+
+\begin{equation*}
+\square (A \Rightarrow B)
+\end{equation*}
+
+"`Never change a running system"'
+
+\begin{equation*}
+\square (R \Rightarrow \square R)
+\end{equation*}
+
+gleichwertig: $ \square (R \Rightarrow \bigcirc R) $
+
+Semantik:\\
+\\
+$ \sigma $ sei ein serieller Ablauf\\
+$ j $ sei eine natürliche Zahl\\
+$ p $ sei eine temporal logische Formel\\
+\\ % \models heißt erfüllt
+$ (\sigma, j) \models p $ "`Formel $ p $ gilt an Position $ j $ des Ablaufs $ \sigma $"'
+
+Das wird rekursiv definiert durch:
+
+\begin{align*}
+& (\sigma, j) \models p \wedge q : \Leftarrow\\
+& (\sigma, j) \models p \wedge (\sigma, j) \models q\\
+& \text{usw.} \\ % TODO: Zusätzliches Ausrichten nach :<=>
+& (\sigma, j) \models \bigcirc p : \Leftrightarrow (\sigma, j + 1) \models p\\
+& (\sigma, j) \models \square p : \Leftrightarrow \forall k \geq j: (\sigma, k) \models p\\
+& (\sigma, j) \models \diamond p : \Leftrightarrow \exists k \geq j: (\sigma, k) \models p
+\end{align*}
+
+Gegenseitiger Ausschluss mit temporal-logischen Formeln:\\
+Beispiel:\\
+\begin{equation*}
+z_x :\Leftrightarrow 0 \leq \#_{Bel}x - \#_{Fr} x \leq 1
+\end{equation*}
+$ \square z $\\
+\\
+Kein Verhungern:\\
+$ beant_{i\ x} :\Leftrightarrow \#_{ant_i}x > \#_{bel_i}x $\\
+"`Thread i hat die Sperre beantragt, aber noch nicht belegt"'\\
+\\
+$ a_x $ soll bedeuten: Aktion $ a $ ist im Zustand $ x $ soeben ausgeführt worden.\\
+\\ % Grafik: 20160519_VerhungernZeitstrahl
+Semantik dazu:\\
+\begin{equation*}
+(\sigma, j) \models a : \Leftrightarrow \sigma(j) = a
+\end{equation*}
+$ \square (beant_i \Rightarrow \diamond bel_i) $
