@@ -52,24 +52,26 @@ Thread verbr:
 Prozedur einreihen(puffer, datenblock):
 \begin{enumerate}
 	\item belegen(leer);
-	\item kopieren(datenblock, puffer); -> kopiert Datenblock in Puffer
+	\item kopieren(datenblock, puffer); $\rightarrow$ kopiert Datenblock in Puffer
 	\item freigeben(voll);
 \end{enumerate}
 Prozedur abholen(puffer, datenblock):
 \begin{enumerate}
 	\setcounter{enumi}{3}
 	\item belegen(voll);
-	\item kopieren(puffer, datenblock); -> kopiert Puffer in Datenblock
+	\item kopieren(puffer, datenblock); $\rightarrow$ kopiert Puffer in Datenblock
 \end{enumerate}
 Hauptprogramm (HP):
 \begin{enumerate}
-	\item[] Sperre voll anlegen; -> als belegt
-	\item[] Sperre leer anlegen; -> als belegt
+	\item[] Sperre voll anlegen; $\rightarrow$ als belegt
+	\item[] Sperre leer anlegen; $\rightarrow$ als belegt
 	\item[] Threads erz und verbr anlegen und laufen lassen;
 	\item[0.] freigeben(leer);
 \end{enumerate}
 
 \subsubsection*{Kausalitätsgraph:} % TODO: Grafik Kausalitätsgraph
+
+Ereignis $ e_1 $ \emph{ist kausal für} Ereignis $ e_2 $ $ :\Leftrightarrow $ In jedem Ablauf gilt: Wenn $ e_2 $ stattfindet, dann hat $ e_1 $ vorher stattgefunden. Mit anderen Worten: $ e_2 $ kann erst stattfinden, wenn $ e_1 $ vorher stattgefunden hat.
 
 % Pfeil
 Programmreihenfolge
@@ -82,11 +84,81 @@ Legende für Petri-Netz: Kreis Platz, Strich Transition, Punkt Token.\\
 Bipartiter Graph: Zwei Sorten von Knoten; Pfeile nur zwischen verschiedenen Knoten-Sorten.
 % TODO: Wenn möglich, Petrinetz laufen lassen
 
+\subsubsection*{Signaldiagramm}
+
+% TODO Grafik Signaldiagramm
+
+Verwendung der Sperren voll und leer bewirkt hier:
+\begin{enumerate}
+\item (2) und (5) werden als kritische Bereiche behandelt. 
+\item (2) und (5) werden nur abwechselnd ausgeführt.
+\end{enumerate}
+zu 1: Gegenseitiger Ausschluss gilt. $ \neg $leer.frei $\lor$ $\neg$voll.frei ist Invariante.\\
+zu 2: Folgt aus Programmreihenfolge und 1.
+
 \section{Semaphore}
 
+\begin{description}
+\item[Semaphor] Datenstruktur l mit Zustand l.frei $ \in \mathbb{N_0} $ und Operationen "`belegen"' und "`freigeben"'.
+\end{description}
+Sperre ist Spezialfall mit l.frei $ \in \{0, 1\} $.\\
+\\
+belegen(l): Wartet bis l.frei > 0 und setzt dann l.frei auf l.frei - 1.\\
+freigeben(l): setzt l.frei auf l.frei + 1.\\
+\\
+Zweck: l.frei verschiedene Kopien eines Betriebsmittels werden verwaltet.\\
+\\
+Zusammenhang zu Klammerausdrücken:\\
+"`("' bedeutet "`freigeben(l)"'\\
+"`)"' bedeutet "`belegen(l)"'\\
+l.frei = Anzahl der noch offenen Klammern.\\
+\\
+Beispiel:          ( ( ) ( ) ) % TODO Zeitstrahl
+%l.frei 2_|           _   _
+%       1_|         _| |_| |_
+%         |________|         |_______
+%
+
 \section[Beispiel: Erzeuger/Verbraucher (2)]{Beispiel: Erzeuger/Verbraucher-Problem, 2. Version}
+2. Version: 1 Erzeuger, 1 Verbraucher, N Datenblöcke mit $ N > 0 $ beliebig.\\
+\\
+Threads erz und verbr wie in Version 1.\\
+\\
+Prozedur einreihen(puffer, datenblock):
+\begin{enumerate}
+\item belegen(nichtvoll);$ \rightarrow $ \textbf{I' gilt nun wieder}
+\item stock(puffer, datenblock); $ \rightarrow $ Anfügen des Datenblocks an Puffer hinten
+\item freigeben(nichtleer);$ \rightarrow $ \textbf{I gilt}
+\end{enumerate}
+Prozedur abholen(puffer, datenblock):
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item belegen(nichtleer); $\rightarrow$ \textbf{I' gilt}
+\item datenblock := top(puffer); $ \rightarrow $ liefert vordersten Datenblock des Puffer
+\item pop(puffer);
+\item freigeben(nichtvoll); $\rightarrow$ \textbf{I gilt}
+\end{enumerate}
+Hauptprogramm:
+\begin{itemize}
+\item Leeren puffer anlegen
+\item Semaphore nichtvoll und nichtleer erzeugen mit nichtvoll.frei = 0 und nichtleer.frei = 0.
+\item Threads erz und verbr anlegen und laufen lassen.
+\item freigeben$^N$(nichtvoll); $\rightarrow$ nichtvoll wird N-mal freigegeben. 
+\item \textbf{I gilt}
+\end{itemize}
+
+Invariante I: $ 0 \leq \text{ nichtvoll.frei } \leq N \land \text{ nichtleer.frei } + \text{ nichtvoll.frei } \leq N $\\
+Invariante I': $ 0 \leq \text{ nichtvoll.frei } \leq N \land \text{ nichtleer.frei } + \text{ nichtvoll.frei } \leq N - 1 $\\
+Invariante I'': $ 0 \leq \text{ nichtvoll.frei } \leq N \land \text{ nichtleer.frei } + \text{ nichtvoll.frei } \leq N - 2 $\\
+I'' gilt, wenn beide Threads belegen, aber noch nicht freigeben aufgerufen haben.
 
 \section{Bedingte kritische Bereiche}
+Ein kritischer Bereich soll nur betreten werden, wenn eine gewisse Bedingung B an die gemeinsame Variable gilt. Wie implementiert man das?
+\begin{enumerate}
+\item B vor dem Betreten des kritischen Bereichs überprüfen.\\Problem: B kann beim Betreten des kritischen Bereiches bereits wieder verletzt sein.
+\item B im kritischen Bereich überprüfen.\\Problem: Solange B nicht gilt, soll der Thread warten. Weil er sich im kritischen Bereich befindet, können andere Threads die gemeinsame Variable nicht ändern und damit den Wert von B.
+\end{enumerate}
+Mit kritischen Bereichen kann man das Problem nicht lösen. Abhilfe: neues Konstrukt.
 
 \section[Beispiel: Erzeuger/Verbraucher (3)]{Beispiel: Erzeuger/Verbraucher-Problem, 3. Version}
 
