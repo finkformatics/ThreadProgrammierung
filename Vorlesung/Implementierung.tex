@@ -4,6 +4,67 @@
 
 \section{Konsenszahlen}
 
+\input{vl20160615}
+
 \section{Zwischenspeicher}
+
+\begin{description}
+	\item[Zwischenspeicher (ZSP, engl. cache)] schneller, kleiner Speicher auf dem Prozessorchip.
+\end{description}
+Bemerkung: Herkunft des Begriffs "`cache"': Versteck der Beute eines Einbrechers.\\
+\\
+Verwendung:\\
+Nachdem der Prozessor das erste Mal auf eine gewisse Arbeitsspeicherzelle lesend zugegriffen hat, speichert er den Wert in seinem ZSP. Wenn er das nächste Mal lesend auf dieselbe Adresse zugreifen will, findet er das Ergebnis in seinem ZSP ("`Treffer"', engl. match). Er braucht dazu nicht auf den BUS zuzugreifen.
+
+Um schreibend auf eine Arbeitsspeicherzelle zuzugreifen, speichert der Prozessor das Wort zunächst in seinen ZSP. Nur wenn ein anderer Prozessor auf dieselbe Speicherzelle lesend zugreifen will, muss das Wort in den Arbeitsspeicher geschrieben werden.
+
+\subsubsection*{Vorteil des ZSP:}
+Weniger Zugriffe auf den Arbeitsspeicher nötig, damit schneller und der BUS ist weniger belastet.
+
+Der ZSP lohnt sich, wenn im Programm häufig dicht hintereinander Zugriffe auf dieselbe Adresse vorkommen ("`Lokalität"').
+
+Um den Verwaltungsaufwand gering zu halten, ist der ZSP in sogenannte \emph{Speicherzeilen} (engl. cache lines) organisiert. Sobald der ZSP voll ist, wird es nötig, manche Zeilen auszuwerfen (engl. to evict) um Platz zu schaffen.
+
+\begin{description}
+	\item[Kohärenz] Jeder Lesezugriff auf den ZSP liefert den zuletzt geschriebenen Wert.
+\end{description}
+
+Kohärenz bedeutet praktisch, dass sich durch die Einführung des ZSP nichts am Verhalten des Systems ändert.
+
+Um Kohärenz zu erreichen, verwendet man ein Kohärenz-Protokoll, z.B. das MESI-Protokoll.
+
+\subsubsection*{MESI-Protkoll:}
+
+Jede Speicherzeile hat einen Modus:
+\begin{itemize}
+	\item Modified: Zeile wurde verändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
+	\item Exclusive: Zeile ist unverändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
+	\item Shared: Zeile ist unverändert. Andere Prozessoren können diese Zeile in ihrem ZSP haben.
+	\item Invalid: Zeile enthält eine verwertbaren Daten.
+\end{itemize}
+Beispiel-Ablauf:\\
+A, B, C seien Prozessoren, M sei ein Arbeitsspeicherblock.\\ % Grafik einfügen mesi_01.png
+\\
+A liest Adresse von a.\\ % Grafik einfügen mesi_02.png
+\\
+B liest von Adresse a;\\
+A antwortet\\ % Grafik einfügen mesi_03.png
+\\
+B schreibt auf Adresse a und informiert alle darüber.\\ % Grafik einfügen mesi_04.png
+\\
+A liest von Adresse a;\\
+das führt zu einer Anfrage an alle.\\
+B sendet die veränderten Daten an A und an M.
+
+\begin{description}
+	\item[False Sharing] gemeinsame Speicherzelle, obwohl sich die Daten darin nicht überlappen
+\end{description}
+
+Im ZSP von B:\\ % Grafik einfügen false_sharing_01.png
+\\ % Grafik einfügen false_sharing_02.png
+\\
+False Sharing führt unnötig häufig zu Modus I.
+
+Daten, die nebeneinander verwendet werden, sollten in verschiedenen Speicherzeilen liegen.
 
 \section{Bäckerei-Algorithmus}
