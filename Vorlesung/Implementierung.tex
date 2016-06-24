@@ -36,12 +36,12 @@ Um Kohärenz zu erreichen, verwendet man ein Kohärenz-Protokoll, z.B. das MESI-
 \subsubsection*{MESI-Protkoll:}
 
 Jede Speicherzeile hat einen Modus:
-\begin{itemize}
-	\item Modified: Zeile wurde verändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
-	\item Exclusive: Zeile ist unverändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
-	\item Shared: Zeile ist unverändert. Andere Prozessoren können diese Zeile in ihrem ZSP haben.
-	\item Invalid: Zeile enthält eine verwertbaren Daten.
-\end{itemize}
+\begin{description}
+	\item[Modified] Zeile wurde verändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
+	\item[Exclusive] Zeile ist unverändert. Kein anderer Prozessor hat diese Zeile in seinem ZSP.
+	\item[Shared] Zeile ist unverändert. Andere Prozessoren können diese Zeile in ihrem ZSP haben.
+	\item[Invalid] Zeile enthält eine verwertbaren Daten.
+\end{description}
 Beispiel-Ablauf:\\
 A, B, C seien Prozessoren, M sei ein Arbeitsspeicherblock.\\ % Grafik einfügen mesi_01.png
 \\
@@ -63,8 +63,94 @@ B sendet die veränderten Daten an A und an M.
 Im ZSP von B:\\ % Grafik einfügen false_sharing_01.png
 \\ % Grafik einfügen false_sharing_02.png
 \\
-False Sharing führt unnötig häufig zu Modus I.
-
-Daten, die nebeneinander verwendet werden, sollten in verschiedenen Speicherzeilen liegen.
+False Sharing führt unnötig häufig zu Modus I.\\
+\\
+Daten, die nebeneinander verwendet werden, sollten in verschiedenen Speicherzeilen liegen.\\
+\\
+Verhalten mit getAndSet:\\
+getAndSet(c, b, true)\\
+Dabei ausgeführte Aktionen:
+\begin{enumerate}
+	\item c lesen
+	\item b schreiben
+	\item c schreiben
+\end{enumerate}
+% Grafik einfügen mesi_05.png
+Zustand vorher\\
+\\ % Grafik einfügen mesi_06.png
+\\
+A führt (1) aus, Wert von c in ZSP von A ist bereits aktuell; keine Änderung.\\
+\\ % Grafik einfügen mesi_07.png
+\\
+A führt (2) aus\\
+\\ % Grafik einfügen mesi_08.png
+\\ 
+A führt (3) aus\\
+\\ % Grafik einfügen mesi_09.png
+\\
+B führt (1) aus\\
+\\ % Grafik einfügen mesi_10.png
+\\
+B führt (2) aus\\
+\\ % Grafik einfügen mesi_11.png
+\\
+B führt (3) aus, Keine Änderung, denn der Wert in c verändert sich nicht dabei.\\
+\\
+Alle getAndSet-Aufrufe der Warteschleife können ohne BUS-Zugriff abgearbeitet werden.
 
 \section{Bäckerei-Algorithmus}
+\begin{description}
+	\item[Bäckerei-Algorithmus (engl bakery algorithm)] von Leslie Lamport 1974 publiziert; Implementierung von Sperren mit atomaren Registern.
+\end{description}
+
+Analogie: Jeder, der (in Amerika) eine Bäckerei betritt, zieht zuerst eine laufende Nummer. Der Kunde mit der niedrigsten Nummer wird als nächste bedient.\\
+\\
+Pseudocode mit einer Sperre:\\
+\begin{lstlisting}[escapeinside={(*}{*)}]
+Typ Thread ID = {0, ..., n - 1}; // n Threads
+volatile flag: boolean[ThreadID]; // initialisiert mit false
+volatile label: long[ThreadID]; // initialisiert mit 0
+Prozedur belegen():
+    int i := Nummer des aufrufenden Threads;
+    flag[i] := true;
+    label[i] := max(label[0], ..., label[n - 1]) + 1;
+    Warte solange (* $\exists k \neq i : \text{flag}[k] \land \left(\text{label}[k], k\right) <_\text{lex} \left(\text{label}[i], i\right)$ *)
+Prozedur freigeben():
+    flag[Nummer des aufrufenden Threads] := false;
+\end{lstlisting}
+\textbf{Behauptung:} Der Bäckerei-Algorithmus hat die Fortschritt-Eigenschaft.\\
+\textbf{Beweis:} Der Thread i mit dem kleinsten Paar (label[i], i) wartet nicht. Es gibt so ein i, denn $<_\text{lex}$ ist eine Wohlordnung. Damit hat jede nicht-leere Menge ein kleinstes Element.\\
+\\
+\textbf{Behauptung:} Der Bäckerei-Algorithmus ist FCFS (First Come First Serve).\\
+\textbf{Beweis:} Falls Thread i den Torweg verlässt, bevor Thread j ihn betritt, dann gilt:
+\begin{align*}
+	& w_i\left(label[i], v\right) \rightarrow\\
+	& r_j\left(label[i], v\right) \rightarrow\\
+	& w_j\left(label[j], v'\right) \text{ mit } v < v'\\
+	& r_j\left(flag[i], true\right)
+\end{align*}
+Dabei bedeutet $w_i\left(label[i], v\right)$: Schreibzugriff von Thread $i$ auf die Variable $label[i]$; der geschriebene Wert ist v.\\
+Es gilt $flag[i] \land \left(flat[i], i\right) <_\text{lex} \left(label[j], j\right)$.\\
+Aus Fortschritt und FCFS folgt Fairness.\\
+\\
+\textbf{Behauptung:} Der Bäckerei-Algorithmus erfüllt gegenseitigen Ausschluss.\\
+\textbf{Beweis:} Durch Widerspruch (grundsätzliche Methode: Man behauptet, zwei Threads seien simulatan im kritischen Bereich. Herbeiführung von Widerspruch). Angenommen Threads i und j sind nebeneinander im kritischen Bereich. O.B.d.A. gilt: $\left(label[i], i\right) <_\text{lex} \left(label[j], j\right)$. Sobald Thread j die Warteschleife verlassen hat, gilt:
+\begin{equation*}
+	flag[i] = false \text{ (1)}
+\end{equation*}
+oder
+\begin{equation*}
+	\left(label[j], j\right) <_\text{lex} \left(label[i], i\right) \text{ (2)}
+\end{equation*}
+Die Werte von i und j sind fest. Der Wert von label[j] ändert sich nicht mehr bis zum Betreten des kritischen Bereichs. Der Wert von label[i] kann höchstens größer werden.\\
+Wenn also (2) beim Verlassen der Warteschleife gilt, dann auch im kritischen Bereich. Widerspruch!\\
+Also gilt (1). Deswegen 
+\begin{align*}
+&	r_j\left(\text{label}[i], \_\right) \rightarrow \text{ (\_: gelesener Wert ist irrelevant)}\\
+&	w_j\left(\text{label}[j], v\right) \rightarrow\\
+&	r_j\left(\text{flag}[i], false\right) \rightarrow\\
+&	w_i\left(\text{flag}[i], true\right) \rightarrow\\
+&	r_i\left(\text{label}[j], v\right) \rightarrow\\
+&	w_i\left(\text{label}[i], v'\right)
+\end{align*}
+mit $v < v'$, also $\text{label}[j] < \text{label}[i]$. Widerspruch!
