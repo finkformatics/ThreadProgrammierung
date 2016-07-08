@@ -1,11 +1,140 @@
 \chapter{Feinkörnige Nebenläufigkeit}
+Problem: Bei einem hohen Grad an Nebenläufigkeit wird der Zugriff auf das gemeinsame Objekt zum Flaschenhals. Die Threads können nur nacheinander zugreifen.\\
+Abhilfe: 4 Techniken.
+\begin{enumerate}
+	\item \textbf{Feinkörnige Synchronisation:} Statt das Objekt zu sperren, werden nur die betroffenen Komponenten gesperrt. Nur wenn zwei Threads auf dieselbe Komponente zugreifen wollen, muss einer warten.
+	\item \textbf{Optimistische Synchronisation:} Während der Suche nach einer bestimmten Komponente des Objekts werden keine Sperren erworben. Sobald die Komponente gefunden wurde, diese Komponente sperren und überprüfen, ob sich der Kontext inzwischen verändert hat.
+	\item \textbf{Faule Synchronisation:} Löschen einer Komponente wird in zwei Phasen durchgeführt:
+	\begin{enumerate}
+		\item Als gelöscht markieren, z.B. durch Setzen eines gewissen Bits ("`logisches Löschen"').
+		\item Aus der Datenstruktur aushängen ("`physikalisches Löschen"').
+	\end{enumerate}
+	\item \textbf{Nicht-blockierende Synchronisation:} Statt Sperren werden atomare Operationen verwendet.
+\end{enumerate}
 
-\section{Methoden}
+\section[Mengen mit verketteten Listen]{Beispiel: Mengen implementiert durch verkettete Listen}
+Mengen-Schnittstelle:
+\begin{lstlisting}
+Typ Set<T>
+Methoden
+    add(T x) // x zu Menge this hinzufuegen
+    remove(T x) // x aus Menge this entfernen
+    containes(T x) // Wahrheitswert von "this enthaelt x"
+\end{lstlisting}
+Implementierung von Mengen durch verkettete Listen mit Wächtern, sortiert nach Streuwert.\\
+\\
+Listenelement (Typ Node<T>) habe folgende Attribute:\\
+\begin{description}
+	\item[T item] das Element der Menge
+	\item[int key] der Streuwert des Elements
+	\item[Node<T> next] Zeiger auf das nächste Element
+\end{description}
 
-\section{Beispiel: Mengen, grobkörnig}
+\begin{description}
+	\item[Wächter (engl. Sentinel)] "`künstliches"' Listenelement, das Anfang oder Ende der Liste markiert.
+\end{description}
 
-\section{Beispiel: Mengen, feinkörnig}
+Beispiel:\\ % Bild einfügen linkedlist (von Handy)
+\\
+Die Streuwerte sind sortiert: $ -\infty \leq 1 \leq 25 \leq +\infty $.\\
+\\
+Klasse List<T> mit Attribut head vom Typ Node<T>.\\
+Invariante: Wächter werden weder hinzugefügt noch gelöscht. Die Listenelemente sind nach Streuwert sortiert.
 
-\section{Beispiel: Mengen, optimistisch}
+\section{Implementierung mit Feinkörniger Synchronisation}
+In Java:
+\lstset{language=Java,tabsize=4}
+\begin{lstlisting}
+class List<T> {
+	...
+	public boolean add(T x) {
+		int k = x.hashCode(); // Streuwert
+		Node<T> pred, curr;
+		try {
+			pred = this.head;
+			curr = pred.next;
+			pred.lock(); // Assume implementation
+			curr.lock();
+			while (curr.key < k) {
+				pred.unlock();
+				pred = curr;
+				curr = pred.next;
+				curr.lock();
+			}
+			if (curr.key != k) {
+				Node<T> node = new Node<>(x);
+				node.next = curr;
+				pred.next = node;
+			}
+		} finally {
+			curr.unlock();
+			pred.unlock();
+		}
+	}
+}
+\end{lstlisting}
+
+Methoden remove und contains ähnlich.\\
+\\
+Eine Sperre genügt nicht.\\
+Beispiel dazu:\\% Bild einfügen sperregenügtnicht (handy)
+\\
+Thread 1 will b löschen:
+\begin{itemize}
+	\item Sperre in a erwerben; a.next auf c setzen
+\end{itemize}
+Thread 2 will c löschen:
+\begin{itemize}
+	\item Sperre in b erwerben; b.next auf d setzen
+\end{itemize}
+Wirkung: Nur b wird gelöscht!\\
+\\
+Um b zu löschen, muss die Sperre in a und in b erworben werden, und entsprechend um c zu löschen, muss die Sperre in b und in c erworben werden. $\Rightarrow$ Konflikt!
+
+\section{Implementierung mit optimistischer Synchronisation}
+
+In Java:
+\begin{lstlisting}
+class OptList<T> {
+	...
+	public boolean add(T x) {
+		int k = x.hashCode();
+		Node<T> pred, curr;
+		boolean done = false;
+		while (!done) {
+			pred = this.head;
+			curr = pred.next;
+			while (curr.key < k) {
+				pred = curr;
+				curr = pred.next;
+			}
+			try {
+				pred.lock();
+				curr.lock();
+				if (this.validate(pred, curr)) {
+					if (curr.key != k) {
+						Node<T> node = new Node<>(x);
+						node.next = curr;
+						pred.next = node;
+					}
+					done = true;
+				}
+			} finally {
+				curr.unlock();
+				pred.unlock();
+			}
+		}
+	}
+	
+	private boolean validate(Node<T> pred, Node<T> curr) {
+		Node<T> node = this.head;
+		while (node.key < pred.key) {
+			node = node.next;
+		}
+		return node == pred && curr = node.next;
+	}
+}
+\end{lstlisting}
+Diskussion: Optimistisches Synchronisation lohnt sich, wenn zweimaliges Durchlaufen der Liste billiger ist als einmaliges Durchlaufen mit Setzen von Sperren. Belegen und Freigeben sind aufwendig.
 
 \section{Beispiel: Mengen, faul}

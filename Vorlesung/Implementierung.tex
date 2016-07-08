@@ -153,4 +153,12 @@ Also gilt (1). Deswegen
 &	r_i\left(\text{label}[j], v\right) \rightarrow\\
 &	w_i\left(\text{label}[i], v'\right)
 \end{align*}
-mit $v < v'$, also $\text{label}[j] < \text{label}[i]$. Widerspruch!
+mit $v < v'$, also $\text{label}[j] < \text{label}[i]$. Widerspruch!\\
+\\
+Nachteil: Falls nur atomare Lese- und Schreib-Operationen zur Verfügung stehen ("`atomare Register"'), sind für n Threads Lese- und Schreibzugriffe auf mindestens n Speicherzellen notwendig (Burns/Lynch 1993).\\
+Grund: Jeder Thread benötigt eine Speicherzelle, auf die nur er schreibt. Sonst kann ein anderer Thread das überschreiben, was ein anderer geschrieben hat.\\
+Es muss mindestens n + 1 unterscheidbare Zustände geben: 
+\begin{enumerate}
+	\item kein Thread befindet sich im kritischen Bereich
+	\item Thread i befindet sich im kritischen Bereich
+\end{enumerate}
