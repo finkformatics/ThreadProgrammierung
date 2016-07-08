@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{float}
 
 % verlinktes Inhaltsverzeichnis
 \usepackage[pdftex,
@@ -23,3 +24,5 @@ colorlinks=false]{hyperref}
 
 \newcommand\circlearound[1]{%
 	\tikz[baseline]\node[draw,shape=circle,anchor=base] {#1} ;}
+
+\lstset{language=Java,tabsize=4,basicstyle=\footnotesize\ttfamily,breaklines=true}

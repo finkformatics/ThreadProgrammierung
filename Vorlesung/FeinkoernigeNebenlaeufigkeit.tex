@@ -43,7 +43,6 @@ Invariante: Wächter werden weder hinzugefügt noch gelöscht. Die Listenelement
 
 \section{Implementierung mit Feinkörniger Synchronisation}
 In Java:
-\lstset{language=Java,tabsize=4}
 \begin{lstlisting}
 class List<T> {
 	...
@@ -137,4 +136,58 @@ class OptList<T> {
 \end{lstlisting}
 Diskussion: Optimistisches Synchronisation lohnt sich, wenn zweimaliges Durchlaufen der Liste billiger ist als einmaliges Durchlaufen mit Setzen von Sperren. Belegen und Freigeben sind aufwendig.
 
-\section{Beispiel: Mengen, faul}
+\section{Implementierung mit fauler Synchronisation}
+Listenelemente bekommen ein neues Attribut: \emph{marked} drückt aus, dass es zum Löschen markiert wurde.\\
+\\
+Neue Version von validate:
+\begin{lstlisting}
+private boolean validate(Node<T> pred, Node<T> curr) {
+	return !pred.marked && !curr.marked && pred.next == curr;
+}
+\end{lstlisting}
+Löschen:
+\begin{lstlisting}
+public boolean remove(T item) {
+	int k = item.hashCode();
+	boolean done = false;
+	boolean erg = false;
+	while (!done) {
+		Node<T> pred = this.head;
+		Node<T> curr = pred.next;
+		while (curr.key < k) {
+			pred = curr;
+			curr = pred.next;
+		}
+		pred.lock();
+		try {
+			curr.lock();
+			try { // falls erste Sperre geht, aber zweite nicht
+				if (validate(pred, curr)) {
+					if (curr.key == j) {
+						curr.marked = true;
+						pred.next = curr.next;
+						erg = true;
+					}
+					done = true;
+				}
+			} finally {
+				curr.unlock();
+			}
+		} finally {
+			pred.unlock();
+		}
+	}
+	return erg;
+}
+\end{lstlisting}
+Contains:
+\begin{lstlisting}
+public boolean contains(T item) {
+	int k = item.hashCode();
+	Node<T> curr = this.head;
+	while (curr.key < k) {
+		curr = curr.next;
+	}
+	return curr.key == key && !curr.marked;
+}
+\end{lstlisting}

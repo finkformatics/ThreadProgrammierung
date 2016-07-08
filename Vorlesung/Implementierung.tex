@@ -1,10 +1,133 @@
 \chapter{Implementierung}
 
-\section{Atomare Befehle}
+\section{Atomare Maschinenbefehle}
+Wie werden Sperren implementiert?
+
+\subsubsection*{Naiver Versuch}
+\begin{lstlisting}
+belegen(l):
+	Solange !l.frei gilt, wiederhole:    (1)
+		warte einen Augenblick;          (2)
+	setze l.frei = false;                (3)
+\end{lstlisting}
+Beispielablauf für 2 Threads, die versuchen, belegen(l) aufzurufen. Sei zu Beginn l.frei = true.
+\begin{center}
+\begin{tabular}{c c|c}
+$P_1$ & $P_2$ & l.frei \\ \hline
+(1) & \ & \ \\ 
+\ & (1) & \ \\ 
+(3) & \ & \ \\
+\ & (3) & \ 
+\end{tabular}
+\end{center}
+$\rightarrow$ Beide Threads sind im kritischen Bereich!\\
+$\Rightarrow$ (1)(2)(3) muss selber wieder ein kritischer Bereich sein.\\
+\\
+Man benötigt einen speziellen Maschinenbefehl, z.B.:
+\begin{lstlisting}
+getAndSet(c, b, v):
+	b := c;
+	c := v;
+\end{lstlisting}
+Zwei Ausführungen dieses Maschinenbefehls müssen immer unter gegenseitigem Ausschlusds stattfinden, d.h. der Maschinenbefehl muss atomar (komplett und unteilbar) sein. Die Hardware muss dafür sorgen ("`Arbitrierung"').
+
+\subsubsection*{Implementierung mit getAndSet}
+\begin{lstlisting}
+belegen(l):
+	boolean b;
+	getAndSet(l.frei, b, false);
+	solange !b wiederhole:
+		warte einen Augenblick;
+		getAndSet(l.frei, b, false);
+
+freigeben(l):
+	boolean b;
+	getAndSet(l.frei, b, true);
+\end{lstlisting}
+
+\subsubsection*{Alternativen}
+
+\begin{lstlisting}
+getAndInc(c, b):
+	b := c;
+	c := c + 1;
+	
+getAndDec(c, b):
+	b := c;
+	c := c - 1;
+
+compareAndSet(c, e, v, b): // b := Wahrheitswert
+	Falls c = e, dann:
+		c := v;
+		b := true;
+	Sonst:
+		b := false;
+\end{lstlisting}
+(Befehl CMPXCHG (compare exchange) auf Intel Pentium)
+
+\subsubsection*{Implementierung mit compareAndSet}
+
+\begin{lstlisting}
+belegen(l):
+	boolean b;
+	compareAndSet(l.frei, true, false, b);
+	Solange !b wiederhole:
+		warte einen Augenblick;
+		compareAndSet(l.frei, true, false, b);
+
+freigeben(l):
+	boolean b;
+	compareAndSet(l.frei, false, true, b);
+\end{lstlisting}
+
+\textbf{Volatile} (engl. für flüchtig), Schlüsselwort in Java.\\
+Beispiel:
+\begin{lstlisting}
+volatile int x;
+\end{lstlisting}
+x ist damit als gemeinsame Variable gekennzeichnet. Übliche Optimierungen des Compilers für lokale Variablen sind ausgeschlossen. Lese- und Schreibzugriffe auf x sind zueinander atomar ("`atomares Register"'). Die Hardware sorgt für Atomarität.
 
 \section{Konsenszahlen}
 
-\input{vl20160615}
+n-Konsens mit \emph{compareAndSet} und \emph{get}:\\
+(Einfaches Konsensproblem: Jeder schlägt sich selber vor)\\
+\begin{lstlisting}
+init(c):
+    Setze c = -1.
+
+entscheide(c, i, a): // mit i: Thread-ID des Aufrufers
+    boolean b;
+    compareAndSet(c, -1, i, b);
+    Falls b gilt, dann:
+        a := i;
+    Sonst:
+        a := get(c); // Kann auch ohne Fallunterscheidung
+                     // angewandt werden, da fuer b true gilt:
+                     // i == get(c)
+\end{lstlisting}
+
+\subsubsection*{Read/Modify/Write-Operation:}
+rmw(c, b, f): (mit c ist gemeinsame Variable mit Wert vom Typ T, b ist Ergebnisvariable mit Wert von Typ T und f ist Modifikationsfunktion f: T $\rightarrow$ T).\\
+b := c;\\
+c := f(c);\\
+
+Es gilt: \\
+getAndSet(c, b, v) = rmw(c, b, $\lambda$x . v)\\
+getAndInc(c, b) = rmw(c, b, $\lambda$x . x + 1)\\
+
+Schar F von Funktionen von T nach T heißt \emph{Common2}, falls:
+
+\begin{align}
+	f(g(x)) & = f(x) \text{ (f absorbiert g) oder}\\
+	g(f(x)) & = g(x) \text{ oder}\\
+	f(g(x) & = g(f(x))	
+\end{align}
+für alle $f, g \in F, x \in T$ (trivial für f = g).\\
+\\
+F heißt \emph{nicht-trivial}, falls $ F \neq \{id\} $ mit $ F $ ist nichtleer, d.h. $ F \backslash \{id\} \neq \emptyset $.\\
+\\
+Beispiel: $ F = \{\lambda x\ .\ x + 1, \lambda x\ .\ x - 1\} = \{s, p\} $.\\
+Es gilt: $ s(p(x) = x = p(s(x)) $ für alle $ x \in \mathbb{Z} $. Also ist $ F $ Common2. Damit Konsenszahl $\leq$ 2. Da $ F $ nicht-trivial, ist Konsenszahl = 2. 
 
 \section{Zwischenspeicher}
 
@@ -43,26 +166,48 @@ Jede Speicherzeile hat einen Modus:
 	\item[Invalid] Zeile enthält eine verwertbaren Daten.
 \end{description}
 Beispiel-Ablauf:\\
-A, B, C seien Prozessoren, M sei ein Arbeitsspeicherblock.\\ % Grafik einfügen mesi_01.png
-\\
-A liest Adresse von a.\\ % Grafik einfügen mesi_02.png
-\\
-B liest von Adresse a;\\
-A antwortet\\ % Grafik einfügen mesi_03.png
-\\
-B schreibt auf Adresse a und informiert alle darüber.\\ % Grafik einfügen mesi_04.png
-\\
-A liest von Adresse a;\\
-das führt zu einer Anfrage an alle.\\
-B sendet die veränderten Daten an A und an M.
+A, B, C seien Prozessoren, M sei ein Arbeitsspeicherblock.
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_01}
+		\caption{A liest Adresse von a.}
+		\label{pic:mesi01}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_02}
+		\caption{B liest Adresse von a; A antwortet.}
+		\label{pic:mesi02}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_03}
+		\caption{B schreibt auf Adresse a und informiert alle darüber.}
+		\label{pic:mesi03}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_04}
+		\caption{A liest von Adresse a, das führt zu Anfrage an alle, B sendet Daten.}
+		\label{pic:mesi04}
+	\end{center}
+\end{figure} 
 
 \begin{description}
 	\item[False Sharing] gemeinsame Speicherzelle, obwohl sich die Daten darin nicht überlappen
 \end{description}
 
-Im ZSP von B:\\ % Grafik einfügen false_sharing_01.png
-\\ % Grafik einfügen false_sharing_02.png
-\\
+Im ZSP von B:
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/false_sharing_01}
+		\caption{Speicherzeile für Adresse a.}
+		\label{pic:falsesharing}
+	\end{center}
+\end{figure} 
 False Sharing führt unnötig häufig zu Modus I.\\
 \\
 Daten, die nebeneinander verwendet werden, sollten in verschiedenen Speicherzeilen liegen.\\
@@ -75,27 +220,56 @@ Dabei ausgeführte Aktionen:
 	\item b schreiben
 	\item c schreiben
 \end{enumerate}
-% Grafik einfügen mesi_05.png
-Zustand vorher\\
-\\ % Grafik einfügen mesi_06.png
-\\
-A führt (1) aus, Wert von c in ZSP von A ist bereits aktuell; keine Änderung.\\
-\\ % Grafik einfügen mesi_07.png
-\\
-A führt (2) aus\\
-\\ % Grafik einfügen mesi_08.png
-\\ 
-A führt (3) aus\\
-\\ % Grafik einfügen mesi_09.png
-\\
-B führt (1) aus\\
-\\ % Grafik einfügen mesi_10.png
-\\
-B führt (2) aus\\
-\\ % Grafik einfügen mesi_11.png
-\\
-B führt (3) aus, Keine Änderung, denn der Wert in c verändert sich nicht dabei.\\
-\\
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_05}
+		\caption{Zustand vorher.}
+		\label{pic:mesi05}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_06}
+		\caption{A führt (1) aus, Wert von c in ZSP von A ist bereits aktuell, keine Änderung.}
+		\label{pic:mesi06}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_07}
+		\caption{A führt (2) aus.}
+		\label{pic:mesi07}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_08}
+		\caption{A führt (3) aus.}
+		\label{pic:mesi08}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_09}
+		\caption{B führt (1) aus.}
+		\label{pic:mesi09}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_10}
+		\caption{B führt (2) aus.}
+		\label{pic:mesi10}
+	\end{center}
+\end{figure} 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{res/mesi_11}
+		\caption{B führt (3) aus, keine Änderung, denn der Wert in c verändert sich nicht dabei.}
+		\label{pic:mesi11}
+	\end{center}
+\end{figure} 
+
 Alle getAndSet-Aufrufe der Warteschleife können ohne BUS-Zugriff abgearbeitet werden.
 
 \section{Bäckerei-Algorithmus}
