@@ -34,8 +34,14 @@ Listenelement (Typ Node<T>) habe folgende Attribute:\\
 	\item[Wächter (engl. Sentinel)] "`künstliches"' Listenelement, das Anfang oder Ende der Liste markiert.
 \end{description}
 
-Beispiel:\\ % Bild einfügen linkedlist (von Handy)
-\\
+Beispiel:
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=\textwidth]{res/linkedlist}
+		\caption{Visualisierung einer LinkedList.}
+		\label{pic:linkedlist}
+	\end{center}
+\end{figure} 
 Die Streuwerte sind sortiert: $ -\infty \leq 1 \leq 25 \leq +\infty $.\\
 \\
 Klasse List<T> mit Attribut head vom Typ Node<T>.\\
@@ -75,20 +81,29 @@ class List<T> {
 
 Methoden remove und contains ähnlich.\\
 \\
-Eine Sperre genügt nicht.\\
-Beispiel dazu:\\% Bild einfügen sperregenügtnicht (handy)
-\\
+Eine Sperre genügt nicht. Beispiel dazu:
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=\textwidth]{res/linkedlist_onelock}
+		\caption{Visualisierung einer LinkedList.}
+		\label{pic:linkedlistonelock}
+	\end{center}
+\end{figure} 
 Thread 1 will b löschen:
 \begin{itemize}
-	\item Sperre in a erwerben; a.next auf c setzen
+	\item Sperre in a erwerben
+	\item a.next auf c setzen
 \end{itemize}
 Thread 2 will c löschen:
 \begin{itemize}
-	\item Sperre in b erwerben; b.next auf d setzen
+	\item Sperre in b erwerben
+	\item b.next auf d setzen
 \end{itemize}
 Wirkung: Nur b wird gelöscht!\\
 \\
 Um b zu löschen, muss die Sperre in a und in b erworben werden, und entsprechend um c zu löschen, muss die Sperre in b und in c erworben werden. $\Rightarrow$ Konflikt!
+
+\pagebreak
 
 \section{Implementierung mit optimistischer Synchronisation}
 
