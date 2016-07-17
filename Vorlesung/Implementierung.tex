@@ -31,6 +31,8 @@ getAndSet(c, b, v):
 \end{lstlisting}
 Zwei Ausführungen dieses Maschinenbefehls müssen immer unter gegenseitigem Ausschlusds stattfinden, d.h. der Maschinenbefehl muss atomar (komplett und unteilbar) sein. Die Hardware muss dafür sorgen ("`Arbitrierung"').
 
+\pagebreak
+
 \subsubsection*{Implementierung mit getAndSet}
 \begin{lstlisting}
 belegen(l):
@@ -45,17 +47,15 @@ freigeben(l):
 	getAndSet(l.frei, b, true);
 \end{lstlisting}
 
-\subsubsection*{Alternativen}
+Alternativen:
 
 \begin{lstlisting}
 getAndInc(c, b):
 	b := c;
 	c := c + 1;
-	
 getAndDec(c, b):
 	b := c;
 	c := c - 1;
-
 compareAndSet(c, e, v, b): // b := Wahrheitswert
 	Falls c = e, dann:
 		c := v;
@@ -87,7 +87,50 @@ volatile int x;
 \end{lstlisting}
 x ist damit als gemeinsame Variable gekennzeichnet. Übliche Optimierungen des Compilers für lokale Variablen sind ausgeschlossen. Lese- und Schreibzugriffe auf x sind zueinander atomar ("`atomares Register"'). Die Hardware sorgt für Atomarität.
 
+\pagebreak
+
 \section{Konsenszahlen}
+
+Konsensproblem:
+\begin{enumerate}
+	\item Im Hauptprogramm: init(c); Gemeinsame Variable c wird initialisiert.
+	\item Jeder Thread ruft höchstens ein Mal entscheide(c, v, a) auf. (c: gemeinsame Variable, v: Vorschlag vom Typ T, a: Variable vom Typ T)
+	\item Der Aufruf entscheide(c, v, a) gibt an a einen Wert mit folgenden Eigenschaften:
+	\begin{itemize}
+		\item Einigkeit: Jeder Thread bekommt denselben Wert von a
+		\item Gültigkeit: Der Wert in a wurde von mindestens einem Thread vorgeschlagen.
+	\end{itemize}
+\end{enumerate}
+
+\begin{description}
+	\item[n-Konsensproblem] Konsensproblem mit n beteiligten Threads
+\end{description}
+
+Es gilt:
+\begin{itemize}
+	\item Mit dem n-Konsensproblem löst man auch das k-Konsensproblem für jedes k < n.
+	\item Das 1-Konsensproblem ist trivial löstbar: a := v implementiert entscheide(c, v, a).
+\end{itemize}
+
+Die Konsenszahl für eine Klasse (Sprache) K ist definiert als:
+\begin{equation}
+\begin{cases}
+\infty & \text{falls K das n-Konsensproblem für alle $n \in \mathbb{N}$ löst}\\
+n & \text{falls $n \in \mathbb{N}$ maximal, sodass K das n-Konsensproblem löst}
+\end{cases}
+\end{equation}
+
+Satz: Herlihy, 1991:
+
+\begin{center}
+\begin{tabular}{l|c}
+Klasse K & Konsenszahl K(K)\\ \hline
+atomare Register & 1\\
+Warteschlangen & 2\\
+Common-2-Operationen & 2\\
+compareAndSet & $\infty$
+\end{tabular}
+\end{center}
 
 n-Konsens mit \emph{compareAndSet} und \emph{get}:\\
 (Einfaches Konsensproblem: Jeder schlägt sich selber vor)\\
@@ -277,18 +320,21 @@ Alle getAndSet-Aufrufe der Warteschleife können ohne BUS-Zugriff abgearbeitet w
 	\item[Bäckerei-Algorithmus (engl bakery algorithm)] von Leslie Lamport 1974 publiziert; Implementierung von Sperren mit atomaren Registern.
 \end{description}
 
-Analogie: Jeder, der (in Amerika) eine Bäckerei betritt, zieht zuerst eine laufende Nummer. Der Kunde mit der niedrigsten Nummer wird als nächste bedient.\\
-\\
-Pseudocode mit einer Sperre:\\
+Analogie: Jeder, der (in Amerika) eine Bäckerei betritt, zieht zuerst eine laufende Nummer. Der Kunde mit der niedrigsten Nummer wird als nächste bedient.
+\pagebreak
+
+Pseudocode mit einer Sperre:
 \begin{lstlisting}[escapeinside={(*}{*)}]
 Typ Thread ID = {0, ..., n - 1}; // n Threads
 volatile flag: boolean[ThreadID]; // initialisiert mit false
 volatile label: long[ThreadID]; // initialisiert mit 0
+
 Prozedur belegen():
     int i := Nummer des aufrufenden Threads;
     flag[i] := true;
     label[i] := max(label[0], ..., label[n - 1]) + 1;
     Warte solange (* $\exists k \neq i : \text{flag}[k] \land \left(\text{label}[k], k\right) <_\text{lex} \left(\text{label}[i], i\right)$ *)
+    
 Prozedur freigeben():
     flag[Nummer des aufrufenden Threads] := false;
 \end{lstlisting}

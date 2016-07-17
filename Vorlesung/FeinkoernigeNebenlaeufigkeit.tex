@@ -47,6 +47,8 @@ Die Streuwerte sind sortiert: $ -\infty \leq 1 \leq 25 \leq +\infty $.\\
 Klasse List<T> mit Attribut head vom Typ Node<T>.\\
 Invariante: Wächter werden weder hinzugefügt noch gelöscht. Die Listenelemente sind nach Streuwert sortiert.
 
+\pagebreak
+
 \section{Implementierung mit Feinkörniger Synchronisation}
 In Java:
 \begin{lstlisting}
@@ -103,13 +105,9 @@ Wirkung: Nur b wird gelöscht!\\
 \\
 Um b zu löschen, muss die Sperre in a und in b erworben werden, und entsprechend um c zu löschen, muss die Sperre in b und in c erworben werden. $\Rightarrow$ Konflikt!
 
-\pagebreak
-
 \section{Implementierung mit optimistischer Synchronisation}
-
-In Java:
 \begin{lstlisting}
-class OptList<T> {
+class OptList<T> { // (Java)
 	...
 	public boolean add(T x) {
 		int k = x.hashCode();
@@ -195,6 +193,9 @@ public boolean remove(T item) {
 	return erg;
 }
 \end{lstlisting}
+
+\pagebreak
+
 Contains:
 \begin{lstlisting}
 public boolean contains(T item) {

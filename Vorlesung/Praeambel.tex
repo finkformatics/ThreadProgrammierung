@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{float}
+\usepackage{multirow}
 
 % verlinktes Inhaltsverzeichnis
 \usepackage[pdftex,colorlinks=false,hidelinks]{hyperref}
@@ -18,6 +19,8 @@
 
 \DeclareMathOperator{\zeit}{zeit}
 \DeclareMathOperator{\aktion}{aktion}
+\DeclareMathOperator{\pre}{pre}
+\DeclareMathOperator{\post}{post}
 
 \setlength\parindent{0pt}
 
@@ -25,3 +28,5 @@
 	\tikz[baseline]\node[draw,shape=circle,anchor=base] {#1} ;}
 
 \lstset{language=Java,tabsize=4,basicstyle=\footnotesize\ttfamily,breaklines=true}
+
+\def\arraystretch{1.5}

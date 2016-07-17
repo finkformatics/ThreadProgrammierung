@@ -196,7 +196,90 @@ Mit kritischen Bereichen kann man das Problem nicht lösen. Abhilfe: neues Konst
 	Puffergröße & N (mit $N > 0$ beliebig)
 \end{tabular}\\
 \\
+\begin{lstlisting}
+einreihen(puffer, datenblock):
+	kritisch l {
+		warte auf laenge(puffer) < N;
+		stock(puffer, datenblock);
+	}
+
+abholen(puffer, datenblock):
+	kritisch l {
+		warte auf laenge(puffer) > 0;
+		datenblock := top(puffer);
+		pop(puffer);
+	}
+
+// laenge(puffer) liefert die Anzahl der Datenbloecke im Puffer
+
+main():
+	Erzeugen des Puffers (leer);
+	Erzeugen der Sperre l fuer den Puffer;
+	Erzeugen und Starten der Threads;
+
+// Version mit Bedingungsvariablen
+einreihen(puffer, datenblock):
+	belegen(l);
+	solange laenge(puffer) < N wiederhole:
+		wait(nichtvoll);
+	stock(puffer, datenblock);
+	signalAll(nichtleer);
+	falls laenge(puffer) < N, dann:
+		signalAll(nichtvoll);
+	freigeben(l);
+
+abholen(puffer, datenblock):
+	belegen(l);
+	solange laenge(puffer) > 0 wiederhole:
+		wait(nichtleer);
+	datenblock := top(puffer);
+	pop(puffer);
+	signalAll(nichtvoll);
+	falls laenge(puffer) > 0, dann:
+		signalAll(nichtleer);
+	freigeben(l);
+\end{lstlisting}
 
 \section{Wiederbetretbare Sperren}
+\begin{description}
+	\item[Wiederbetretbare Sperre (engl. reentrant lock)] Ein Thread darf die Sperre mehrfach erwerben.
+\end{description}
+Zweck: Innerhalb eines kritischen Bereiches darf man eine Prozedur aufrufen, die wieder einen kritischen Bereich für dieselbe gemeinsame Variable enthält. $\Rightarrow$ bequemere Programmierung.\\
+Die inneren kritischen Bereiche sollen dazu wirkungslos sein.\\
+\\
+Beispiel:
+\begin{lstlisting}
+belegen(l);
+S1;
+belegen(l);
+S2;
+freigeben(l);
+S3;
+freigeben(l);
+// Von S1 bis S3 kritischer Bereich. Innere belegen(l) und freigeben(l) wirkungslos.
+\end{lstlisting}
+\textbf{Bemerkung:} Wiederbetretbare Sperren und Semaphore sind inkompatibel zueinander.
 
 \section{Leser/Schreiber-Problem}
+Mehrere Threads greifen lesend oder schreibend auf eine gemeinsame Variable zu (Courtois et al, 1971). Mehrere Threads können lesend auf die gemeinsame Variable zugreifen, ohne sich gegenseitig zu stören.
+
+\begin{description}
+	\item[Lese/Schreib-Konflikt] Eine gemeinsame Variable darf nicht gleichzeitig gelesen und geschrieben werden.
+	\item[Schreib/Schreib-Konflikt] Eine gemeinsame Variable darf nicht von mehreren Threads gleichzeitig geschrieben werden.
+\end{description}
+
+\textbf{2 Varianten:}
+\begin{enumerate}
+	\item Ein Leser muss nur dann warten, wenn gerade ein Schreiber aktiv ist: Leser haben Vorrang.
+	\item Ein Schreiber muss nur auf Leser und Schreiber warten, die gerade aktiv sind: Schreiber haben Vorrang.
+\end{enumerate}
+Wenn (1) und (2) abwechselnd verwendet werden, bekommt man Fairness.
+\begin{center}
+	\begin{tabular}{l r|c c}
+		\ & \ & \multicolumn{2}{c}{\textbf{Leser}} \\ 
+		\ & \ & 0 & $\geq 1$ \\ \hline
+		\multirow{3}{*}{\textbf{Schreiber}} & 0 & i. O. & i. O. \\
+		\ & 1 & i. O. & LS \\
+		\ & $\geq 2$ & SS & LS + SS
+	\end{tabular}
+\end{center}

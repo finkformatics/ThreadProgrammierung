@@ -90,31 +90,39 @@ Projektion auf eine Menge B von Aktionen ("`Sicht"'):
 \end{equation*}
 Zustand zum Zeitpunkt $ t \in R $:
 \begin{equation*}
-	z_t(E) := e \in E | zeit(e) \leq t % TODO: Kleiner oder kleiner gleich?!
+	z_t(E) := e \in E | zeit(e) < t
 \end{equation*}
 
 $ \rightarrow $ für Zeiträume: Ende von Zeitraum A kommt vor Anfang von Zeitraum B: A $ \rightarrow $ B. Es gilt: Für Zeiträume ist $ \rightarrow $ \emph{nicht} total!
 $ A \rightarrow B \vee B \rightarrow A \Leftrightarrow A $ und $ B $ überlappen nicht (Wenn sich $ A $ und $ B $ überlappen gilt weder $ A  \rightarrow B $ noch $ B \rightarrow A $).
 
+\begin{lstlisting}
+        A                B
+  |----------|     |----------|
+Beginn      Ende Beginn      Ende
+\end{lstlisting}
+
 \begin{description}
-	\item[Prozessalphabet] Menge der Aktionen, die der Thread p "`sieht"'
+	\item[Prozessalphabet $\alpha(p)$] Menge der Aktionen, die der Thread p "`sieht"'
 	\item[Gemeinsame Aktionen von $ p_1 $ und $ p_2 $] $ \alpha(p_1) \cap \alpha(p_2) $
 	\item[Einigkeit (engl. match)] Ereignisse mit gemeinsamen Aktionen finden gemeinsam statt:
-	\begin{itemize} % TODO: Besser formatieren
-		\item (1) $ \pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \cup E_2 = E_1 \cap E_2 $ Gleichwertig zu (1) sind:\\
-		\item (2) $ \pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \oplus E_2 = \emptyset $ // symmetrische Differenz: Vereinigung ohne Schnitt
-		\item (3) $ \pi_{\alpha(p_1)} = \pi_{\alpha(p_2)} $
-	\end{itemize}
+	\begin{enumerate} % TODO: Besser formatieren
+		\item $ \pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \cup E_2) = E_1 \cap E_2 $, Gleichwertig zu (1) sind:\\
+		\item $ \pi_{\alpha(p_1) \cap \alpha(p_2)}(E_1 \oplus E_2) = \emptyset $ $\rightarrow$ symmetrische Differenz: Vereinigung ohne Schnitt
+		\item $ \pi_{\alpha(p_1)} = \pi_{\alpha(p_2)} $
+	\end{enumerate}
 	\item[$ E_i $ Ereignis von Thread i] Es gilt: $ \forall e \in E_i: \aktion(e) \in \alpha(p_i) $
 	\item[Faire Mischung] $ E_1 \cup E_2 $
-	\item[Gemeinsame Ereignisse] $ \pi_{\alpha(p_i)}(E_1 \cap E_2) = E_i, für i \in {1, 2} $, falls sich $ p_1 $ und $ p_2 $ einig sind. Es gilt: $ E_1 \cup E_2 $.
+	\item[Gemeinsame Ereignisse] $ \pi_{\alpha(p_i)}(E_1 \cap E_2) = E_i \text{, für } i \in \{1, 2\} $, falls sich $ p_1 $ und $ p_2 $ einig sind. Es gilt: $ E_1 \cup E_2 $.
 \end{description}
 
 
 \section{Serielle Abläufe}
-Wenn man nicht an den Zeitpunkten der Ereignisse interessiert ist, sondern nur an ihrer Lage zueinander, kann man statt einer Ereignismenge auch eine Aktionenfolge als Beschreibungsmittel für einen Ablauf nehmen.
-
-Beispiele: Sei $ A = \{a, b\} $. Endliche Folge $ (a, b, a) $ kann auch dargestellt werden als Funktion $ f: {1, 2, 3} \rightarrow A $ mit $ f(x) = \begin{cases} a & \text{falls } x = 1 \vee x = 3\\ b & \text{sonst}\end{cases} $\\
+Wenn man nicht an den Zeitpunkten der Ereignisse interessiert ist, sondern nur an ihrer Lage zueinander, kann man statt einer Ereignismenge auch eine Aktionenfolge als Beschreibungsmittel für einen Ablauf nehmen.\\
+\\
+Beispiele: \\
+Sei $ A = \{a, b\} $. Endliche Folge $ (a, b, a) $ kann auch dargestellt werden als Funktion\\
+$ f: \{1, 2, 3\} \rightarrow A $ mit $ f(x) = \begin{cases} a & \text{falls } x = 1 \vee x = 3\\ b & \text{sonst}\end{cases} $\\
 Wertetabelle von f:
 \begin{center}
 	\begin{tabular}{l|c c c}
@@ -125,94 +133,105 @@ Wertetabelle von f:
 
 Unendliche Folge $ (a, b, b, a, b, b, ...) $ als Funktion $ f: \mathbb{N} \rightarrow A $ mit $ f(x) = \begin{cases} a & \text{falls } x \mod 3 = 1\\ b & \text{sonst}\end{cases} $\\
 \\
-$ A^k $ k-Tupel von Elementen aus A und \\
-$ {i \in \mathbb{N} | i \leq k} \rightarrow A $ Folgen der Länge k werden miteinander identifiziert.
-
-$A^k$ k-Tupel von Elementen aus A und ${i \in \mathbb{N} | i \leq k} \rightarrow$ A Folgen der Länge k werden miteinander identifiziert.
-
-Um endliche und unendliche Abläufe einheitlich zu modellieren, bildet man die \emph{Positionenmenge} $\mathbb{N}_\infty := \mathbb{N} \cup {\infty}$.\\
+$A^k$ k-Tupel von Elementen aus A und $\{i \in \mathbb{N} | i \leq k\} \rightarrow A$ Folgen der Länge k werden miteinander identifiziert.\\
+\\
+Um endliche und unendliche Abläufe einheitlich zu modellieren, bildet man die \emph{Positionenmenge} $\mathbb{N}_\infty := \mathbb{N} \cup \{\infty\}$.\\
+\\
 Vergleich $\leq$ auf $\mathbb{N}_\infty$ sei definiert durch
 \begin{equation*}
-m \leq n \Leftrightarrow (n = \mathbb{N}_0 \lor  m, n \in \mathbb{N}_0 \land m \leq n (auf \mathbb{N}_0).\\
+m \leq n \Leftrightarrow (n = \mathbb{N}_0) \lor  m, n \in \mathbb{N}_0 \land m \leq n \text{ (auf } \mathbb{N}_0 \text{)}.\\
 \end{equation*}
-Vergleich $m \leq n$ für m, n $\in \mathbb{N}_0$ liefert dasselbe bei $\leq$ auf $\mathbb{N}_0$ wie bei $\leq$ auf $\mathbb{N}_0$.
+
+Vergleich $m \leq n$ für m, n $\in \mathbb{N}_0$ liefert dasselbe bei $\leq$ auf $\mathbb{N}_\infty$ wie bei $\leq$ auf $\mathbb{N}_0$.
 \\
-$\le$ auf $\mathbb{N}_\infty$ sei definiert durch $m \le n \Leftrightarrow m \leq n \land m \neq n$.
-Es gilt: $\le$ auf $\mathbb{N}_\infty$ ist eine Fortsetzung von $\le$ auf $\mathbb{N}_0$ und eine Wohlordnung.\\
+Es gilt: $\leq$ auf $\mathbb{N}_\infty$ ist eine Fortsetzung von $\leq$ auf $\mathbb{N}_0$ und eine Wohlordnung.\\
+\\
+$<$ auf $\mathbb{N}_0$ sei definiert durch $m < n \Leftrightarrow m \leq n \land m \neq n$.\\
+Es gilt: $<$ auf $\mathbb{N}_\infty$ ist eine Fortsetzung von $<$ auf $\mathbb{N}_0$ und eine Wohlordnung.\\
+\\
 Bemerkung: $\leq$ lässt sich weiter fortsetzen: Ordinalzahlen.\\
 \\
 \subsubsection*{Aktionenfolgen}
-Sei A eine Aktionenmenge. Dann sei $A^* := \cup_{\substack{k \in \mathbb{N}_0}} A^k$.
-$A^\infty := A^* \cup (\mathbb{N} \rightarrow A)$, wobei $A^k$ eine endliche Folge ist und $(\mathbb{N} \rightarrow A$ unendliche Folgen.
-Es gilt $A^k = \cup_{\substack{k \in \mathbb{N}_\infty}} ({i \in \mathbb{N} | i \leq k} \rightarrow A)$.
-Die Länge $\#_x$ einer Aktionenfolge x ist definiert durch $\#_k = \begin{cases}
-\infty&\text{,falls $x \in (\mathbb{N} \rightarrow A)$}\\
-k&\text{, falls $x \in A^k$}
-\end{cases}$
-
-Es gilt $\#_x \in \mathbb{N}_\infty$.
-
-$\leq_{pre} \subseteq A^\infty \times A^\infty$ sei definiert durch $x \leq_{pre} y \Leftrightarrow \#_x \leq \#_y \land \forall 1 \leq i \leq \#_x: x(i) = y(i)$.\\
+Sei A eine Aktionenmenge. Dann sei $A^* := \cup_{\substack{k \in \mathbb{N}_0}} A^k$.\\
+$A^\infty := A^* \cup (\mathbb{N} \rightarrow A)$, wobei $A^*$ eine endliche Folge ist und $(\mathbb{N} \rightarrow A)$ unendliche Folgen.\\
+Es gilt: $A^\infty = \cup_{\substack{k \in \mathbb{N}_\infty}} (\{i \in \mathbb{N} | i \leq k\} \rightarrow A)$.\\
+Die Länge $\#_x$ einer Aktionenfolge x ist definiert durch $\#_x = \begin{cases}
+\infty&\text{ falls } x \in (\mathbb{N} \rightarrow A)\\
+k&\text{ falls }x \in A^k
+\end{cases}$\\
+\\
+Es gilt $\#_x \in \mathbb{N}_\infty$.\\
+\\
+$\leq_{\pre} \subseteq A^\infty \times A^\infty$ sei definiert durch $x \leq_{\pre} y \Leftrightarrow \#_x \leq \#_y \land \forall 1 \leq i \leq \#_x: x(i) = y(i)$.\\
+\\
 Beispiel: \\
 x = (a, b, a, a)\\
 y = (a, b, a, a, b, a, ...)\\
 x ist ein Anfangsstück (auch Präfix, engl. prefix) von y\\
-Es gilt $\leq_{pre}$ ist eine Ordnungsrelation (d.h. $\leq_{pre}$ ist reflexiv, transitiv, antisymmetrisch).
-$\le_{pre} y \Leftrightarrow x \leq_{pre} y \land x \neq y$. strikter Anteil von $\leq_{pre}$
-Es gilt: $\le_{pre}$ ist eine Striktordnung (d.h. irreflexiv, transitiv)
+Es gilt: $\leq_{\pre}$ ist eine Ordnungsrelation (d.h. $\leq_{\pre}$ ist reflexiv, transitiv, antisymmetrisch).\\
 \\
+$<_{\pre}$ ist definiert durch: $x <_{\pre} y \Leftrightarrow x \leq_{\pre} y \land x \neq y$\\
+\\
+"`strikter Anteil von $\leq_{\pre}$"'.\\
+Es gilt: $<_{\pre}$ ist eine Striktordnung (d.h. irreflexiv, transitiv).
 \subsubsection*{Operationen auf Aktionenfolgen}
 \begin{description}
-	\item{rest} $A^\infty \setminus \{\varepsilon\} \rightarrow A^\infty$, wobei \{$\varepsilon$\} leere Aktionenfolge (= Aktionenfolge der Länge 0), ist definiert durch $rest(x)(i) = x(i+1)$. Es gilt: $\#_{rest(x)} = \infty$ falls $\#_x = \infty$ und $\#_{rest(x)} = \#_x - 1$ sonst
-	\item {Konkatenation (Hintereinanderstellen)} von Aktionenfolgen ist definiert durch $(x \cdot y)(i) =
+	\item{rest} $A^\infty \setminus \{\varepsilon\} \rightarrow A^\infty$, wobei \{$\varepsilon$\} leere Aktionenfolge (= Aktionenfolge der Länge 0), ist definiert durch $rest(x)(i) = x(i+1)$. Es gilt: $\#_{rest(x)} = \infty$, falls $\#_x = \infty$ und $\#_{rest(x)} = \#_x - 1$, sonst:
+	\item {Konkatenation (Hintereinanderstellen)} von Aktionenfolgen ist definiert durch \\
+	$(x \cdot y)(i) =
 	\begin{cases}
-	x(i) &,falls i \leq \#_x \\
-	y(i-\#_x)&,sonst
-	\end{cases}$. Der zweite Fall tritt nicht bei $\#_x = \infty$ auf. Es gilt: $x \cdot y = x$, falls $\#_x = \infty$.\\
-	\item{Projektion} $\pi_B A^\infty \rightarrow A^\infty$ auf Aktionenmenge B ist rekursiv definiert durch:\\
+	x(i) & \text{falls } i \leq \#_x \\
+	y(i-\#_x)& \text{sonst}
+	\end{cases}$.\\
+	Der zweite Fall tritt nicht bei $\#_x = \infty$ auf. Es gilt: $x \cdot y = x$, falls $\#_x = \infty$.\\
+	\item{Projektion} $\pi_B : A^\infty \rightarrow A^\infty$ auf Aktionenmenge B ist rekursiv definiert durch:
 \begin{equation*}
 	\pi_B(x) = \begin{cases}
-		\varepsilon &\text{, falls $x = \varepsilon$} \\
-		x(1)\cdot \pi_B(rest(x)) &\text{, falls $0 < \#_x < \infty und x(1) \in B $}\\
-		\pi_B(rest(x)) &\text{, falls $0 < \#_x < \infty und x(1) \notin B$ }\\
-		sup{\pi_B(y) | y \le_{pre} x} &\text{, sonst (Supremum)}
+		\varepsilon &\text{falls $x = \varepsilon$} \\
+		x(1)\cdot \pi_B(rest(x)) &\text{falls $0 < \#_x < \infty$ und $x(1) \in B $}\\
+		\pi_B(rest(x)) &\text{falls $0 < \#_x < \infty$ und $x(1) \notin B$ }\\
+		sup\{\pi_B(y) | y <_{\pre} x\} &\text{sonst (Supremum)}
 	\end{cases}
 \end{equation*}
 \end{description}
-Beispiel:
-x = (a, b, c, a, b, c, ...)
-B = {a, b}
-Behauptung: $\pi_B$ = (a, b, a, b, ...)
-Beweis: Es gilt $\#_x = \infty$. Damit $\pi_B(x) = sup{\pi_B(y) | y \le_{pre} x}$. \\
-$y_0 := \varepsilon$ $y_0 <_{pre} x$. $\pi_B(y_0) = \varepsilon$(leere Allausage ist immer wahr, leere Folge hat keine Komponenten) \\
-$y_1 := (a)$ $y_1 <_{pre} x$ $\pi_B(y_1) = (a)$
-$y_2 := (a, b)$ $\pi_B(y_2) = (a, b)$
-$y_3 := (a, b, c)$ $\pi_B(y_3) = (a, b)$
-$y_4 := (a, b, c, a)$ $\pi_B(y_4) = (a, b, a)$
-\\
+Beispiel:\\
+x = (a, b, c, a, b, c, ...)\\
+B = {a, b}\\
+Behauptung: $\pi_B$ = (a, b, a, b, ...)\\
+Beweis: Es gilt $\#_x = \infty$. Damit $\pi_B(x) = sup\{\pi_B(y) | y <_{\pre} x\}$.
+\begin{center}
+\begin{tabular}{l l l}
+$y_0 := \varepsilon$ & $y_0 <_{\pre} x$ & $\pi_B(y_0) = \varepsilon$\\
+$y_1 := (a)$ & \ & $\pi_B(y_1) = (a)$\\
+$y_2 := (a, b)$ & \ & $\pi_B(y_2) = (a, b)$\\
+$y_3 := (a, b, c)$ & \ & $\pi_B(y_3) = (a, b)$\\
+$y_4 := (a, b, c, a)$ & \ & $\pi_B(y_4) = (a, b, a)$\\
+\ & \vdots & \
+\end{tabular}
+\end{center}
 Die Anzahl der Vorkommen $\#_B(x)$ von Aktionen aus der Menge B in $x \in A^{\infty}$ ist definiert durch $\#_B(x) = \#_{\pi_B(x)}$.
 \\
-Seien $a \in A, i \in \mathbb{N}, x \in A^{\infty}$. Dann ist die Position des i-ten Vorkommens von einer Aktion aus B in x \emph{$B^i_x$} definiert durch  $B^i_x = \#_y+1, falls y \cdot (a) \leq_{pre}x und a \in B und \#_B(y) = i - 1$.\\
+Seien $B \subseteq A, i \in \mathbb{N}, x \in A^{\infty}$. Dann ist die Position des i-ten Vorkommens von einer Aktion aus B in x \emph{$B^i_x$} definiert durch $B^i_x = \#_y + 1 \text{, falls } y \cdot (a) \leq_{\pre} x \text{ und } a \in B und \#_B(y) = i - 1$.\\
 Wohldefiniertheit ist hier zu zeigen.\\
 
 \subsubsection*{Unendliche Wiederholung}
-Für $x \in A^k$ ist \emph{$x^{\infty}$} definiert durch $x^{\infty}(i) = x((i-1)mod k + 1)$.\\
-$(i-1)mod k + 1$ ist wie $i mod k$, außer wenn i ein Vielfaches von k ist:\\
-$(i-1)mod k + 1$ liefert dann k statt 0.\\
+Für $x \in A^k$ ist \emph{$x^{\infty}$} definiert durch $x^{\infty}(i) = x((i - 1) mod k + 1)$.\\
+$(i - 1) mod k + 1$ ist wie $i mod k$, außer wenn i ein Vielfaches von k ist:\\
+$(i - 1) mod k + 1$ liefert dann k statt 0.\\
 \\
-y ist ein Zustand der Aktionenfolge x (y ist Vergangenheit von x), wenn $y \leq_{pre} x$ und $\#_y \in \mathbb{N}_0$ also endlich.
+y ist ein Zustand der Aktionenfolge x (y ist Vergangenheit von x), wenn $y \leq_{\pre} x$ und $\#_y \in \mathbb{N}_0$ also endlich.
 
 \section{Faire Mischung}
 $x \in (A \cup B)^\infty$ heißt eine faire Mischung (engl. fair merge) von $y \in A^\infty$ und $z \in B^\infty$, wenn gilt
 \begin{equation*}
-\pi_A(x) = y \text{ und } \pi_B(x) = z
+\pi_A(x) = y \text{ und } \pi_B(x) = z.
 \end{equation*}
 
 Bemerkung: "`fair"' weil weder y noch z zu kurz kommen.\\
-Bemerkung: Statt "`faire Mischung"' sagt man auch "`Verschränkung"' oder "`shuffle"' bei (Zeichenreihen).\\
-
+Bemerkung: Statt "`faire Mischung"' sagt man auch "`Verschränkung"' oder "`shuffle"' (bei Zeichenreihen).\\
+\\
 Beispiel:\\
-Sei $y = (0, 1)^\infty = (0, 1, 0, 1, 0, ...)$ und $z = (2,3)^\infty = (2, 3, 2, 3, 2, ...)$ mit $A = {0, 1}$ und $B = {2, 3}$. Dann ist $x_1 = (0, 2, 1, 3, 0, 2, 1, 3, ...)$ eine faire Mischung, weil \\
+Sei $y = (0, 1)^\infty = (0, 1, 0, 1, 0, ...)$ und $z = (2,3)^\infty = (2, 3, 2, 3, 2, ...)$ mit $A = \{0, 1\}$ und $B = \{2, 3\}$. Dann ist $x_1 = (0, 2, 1, 3, 0, 2, 1, 3, ...)$ eine faire Mischung, weil \\
 $(0,  1,  0,  1, ...) = y = \pi_A(x)$\\
 $(2, 3, 2, 3, ...) = z = \pi_B(x)$\\.
 Spezialfall $x_1$ heißt auch "`perfect shuffle"'.\\
@@ -221,33 +240,35 @@ Aber auch $x_2 = (2, 0, 1, 3, 2, 0, 1, 3, ...)$ faire Mischung. x braucht nicht 
 
 \section{Sicherheits- und Liveness-Eigenschaften}
 \begin{description}
-\item {Spezifikation} Beschreibung der gewünschten Eigenschaften des Systems aus Anwendersicht
-\item {Verifikation} Nachweis, dass das System seine Spezifikation erfüllt
+\item [Spezifikation] Beschreibung der gewünschten Eigenschaften des Systems aus Anwendersicht
+\item [Verifikation] Nachweis, dass das System seine Spezifikation erfüllt
 \end{description}
 Spezifikation eines sequentiellen Programms $f: Z \rightarrow Z$, wobei $Z$ die Menge der Programmzustände sei:
-$pre_f(z) \Rightarrow post_f(f(z)), z \in Z$.
+$\pre_f(z) \Rightarrow \post_f(f(z)), \forall z \in Z$.
 \begin{description}
-\item {$z$} alter Zustand
-\item {$f(z)$} neuer Zustand
-\item {$pre_f: Z \rightarrow \mathbb{B}$} Vorbedingung
-\item {$post_f: Z \rightarrow \mathbb{B}$} Nachbedingung
+\item [$z$] alter Zustand
+\item [$f(z)$] neuer Zustand
+\item [$\pre_f Z \rightarrow \mathbb{B}$] Vorbedingung
+\item [$\post_f Z \rightarrow \mathbb{B}$] Nachbedingung
 \end{description}
 
 Beispiel:\\
-\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl.jpeg}\\
+\includegraphics[width=.6\textwidth]{Verifikation_Zeitstrahl.jpeg}\\
 Sequentiell: Prozedur wie einzelne Aktion behandeln\\
-\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl2.jpeg}\\
-Problem bei Nebeneinanderablauf: siehe Zeitstrahl, Prozedurausführungen können sich überlappen. Die Ausführung von f und die Ausführung von g können sich über gemeinsame Objekt gegenseitig beeinflussen.\\
-Fazit: Das Verhalten einer Prozedur f ist durch $pre_f$ und $post_f$ nicht mehr genau genug beschreibbar.\\
-\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl3.jpeg}\\
-Vereinfachungsmöglichkeiten:\\
+\includegraphics[width=.6\textwidth]{Verifikation_Zeitstrahl2.jpeg}\\
+
+Problem bei Nebeneinanderablauf: siehe Zeitstrahl, Prozedurausführungen können sich überlappen. Die Ausführung von f und die Ausführung von g können sich über gemeinsame Objekte gegenseitig beeinflussen.\\
+Fazit: Das Verhalten einer Prozedur f ist durch $\pre_f$ und $\post_f$ nicht mehr genau genug beschreibbar.\\
+\includegraphics[width=.6\textwidth]{Verifikation_Zeitstrahl3.jpeg}\\
+\\
+Vereinfachungsmöglichkeiten:
 \begin{itemize}
 \item Aktionen, die keine gemeinsamen Objekte betreffen können zusammengefasst werden zu einer Aktion
 \item Kritische Bereiche können zusammengefasst werden zu einer Aktion
 \end{itemize}
 
 \begin{description}
-\item {Sicherheitseigenschaft (auch: Konsistenz, Invariante, engl. safety property)} Eigenschaften, die für jeden Zustand gelten soll und die sich nur auf vergangene Zustände bezieht.
+\item {Sicherheitseigenschaft (auch: Konsistenz, Invariante, engl. safety property)} Eigenschaft, die für jeden Zustand gelten soll und die sich nur auf vergangene Zustände bezieht.
 \item {Liveness-Eigenschaft (auch: Fortschritt, engl. liveness property)} alle übrigen Eigenschaften von Abläufen
 \end{description}
 Grund für die Unterscheidung:
@@ -255,7 +276,8 @@ Grund für die Unterscheidung:
 \item Sicherheitseigenschaften sind einfacher zu beweisen.
 \item Die meisten Eigenschaften sind Sicherheitseigenschaften.
 \end{enumerate}
-Intuitiv: Eine Sicherheitseigenschaft garantiert, dass nichts unerwünschtes geschieht ("`Verbot"'). Eine Liveness-Eigenschaft garantiert, dass \emph{schließlich} etwas Erwünschtes geschieht ("`Versprechen"'). Ein Thread, der nur wartet, erfüllt alle Sicherheitseigenschaften: "`Wer schläft, sündigt nicht"'.\\
+Intuitiv:\\
+Eine Sicherheitseigenschaft garantiert, dass nichts unerwünschtes geschieht ("`Verbot"'). Eine Liveness-Eigenschaft garantiert, dass \emph{schließlich} etwas Erwünschtes geschieht ("`Versprechen"'). Ein Thread, der nur wartet, erfüllt alle Sicherheitseigenschaften: "`Wer schläft, sündigt nicht"'.\\
 Bemerkung: Zu sequentiellen Programmen ist partielle Korrektheit eine Sicherheitseigenschaft und Termination eine Liveness-Eigenschaft.
 
 \subsection*{Beweismethode für eine Sicherheitseigenschaft}
@@ -267,23 +289,23 @@ Bemerkung: Zu sequentiellen Programmen ist partielle Korrektheit eine Sicherheit
 Variante:
 \begin{enumerate}
 \item S gilt nach Initialisierung.
-\item S bleibt außerhalb von kritischen Bereich erhalten.
-\item Wenn S beim Betreten eines krit. Bereiches gilt, dann auch beim Verlassen.
+\item S bleibt außerhalb von kritischem Bereich erhalten.
+\item Wenn S beim Betreten eines kritischen Bereiches gilt, dann auch beim Verlassen.
 \end{enumerate}
 Sperren sollen folgende Eigenschaften erfüllen:
 \begin{enumerate}
 \item
 	\begin{description}
-		\item {Gegenseitiger Ausschluss} Die kritischen Bereiche zweier Threads überlappen nicht.\\Sicherheitseigenschaft: "`In jedem Zustand ist verboten, dass zwei Threads im krit. Bereich sind"'
+		\item [Gegenseitiger Ausschluss] Die kritischen Bereiche zweier Threads überlappen nicht.\\Sicherheitseigenschaft: "`In jedem Zustand ist verboten, dass zwei Threads im kritischen Bereich sind"'
 	\end{description}
 \item
 	\begin{description}
-		\item {Verklemmungsfreiheit} Wenn ein Thread die Sperre erwerben möchte, dann gibt es einen Thread, der die Sperre bekommt.\\
+		\item [Verklemmungsfreiheit] Wenn ein Thread die Sperre erwerben möchte, dann gibt es einen Thread, der die Sperre bekommt.\\
 		Liveness-Eigenschaft: "`Wenn die Sperre zugeteilt werden soll, wird sie schließlich zugeteilt"'
 	\end{description}
 \item
 	\begin{description}
-		\item {Fairness (auch: kein Verhungern)} Jeder Thread, der eine Sperre erwerben möchte, bekommt sie schließlich auch.\\
+		\item [Fairness (auch: kein Verhungern)] Jeder Thread, der eine Sperre erwerben möchte, bekommt sie schließlich auch. (Liveness-Eigenschaft)
 	\end{description}
 \end{enumerate}
 Es gilt: Aus Fairness folgt Verklemmungsfreiheit.
@@ -292,15 +314,15 @@ Bedingungen für Prozeduraufrufe im Zusammenhang mit nebeneinander laufenden Thr
 \begin{enumerate}
 \item
 	\begin{description}
-		\item {Bounded wait-free} Jeder Prozeduraufruf terminiert nach einer beschränkten Anzahl von Schritten.
+		\item [Bounded wait-free] Jeder Prozeduraufruf terminiert nach einer beschränkten Anzahl von Schritten.
 	\end{description}
 \item
 	\begin{description}
-		\item {Wait-free} Jeder Prozeduraufruf terminiert, d.h. bleibt nicht in einer Warteschleife hängen. (Liveness-Eigenschaft)
+		\item [Wait-free] Jeder Prozeduraufruf terminiert, d.h. bleibt nicht in einer Warteschleife hängen. (Liveness-Eigenschaft)
 	\end{description}
 \item
 	\begin{description}
-		\item {Lock-free} Unendlich viele Aufrufe terminieren. (Liveness-Eigenschaft)
+		\item [Lock-free] Unendlich viele Aufrufe terminieren. (Liveness-Eigenschaft)
 	\end{description}
 \end{enumerate}
 
@@ -316,60 +338,105 @@ Ausdrucksformen für Sicherheits- und Liveness-Eigenschaften:
 \subsection*{Beispiel: Modellieren von Sperren}
 Aktionen:
 \begin{description}
-	\item {$ant_i$} Thread i beantragt die Sperre
-	\item {$bel_i$} Thread i belegt die Sperre (betritt den krit. Bereich)
-	\item {$fr_i$} Thread i gibt die Sperre frei (verlässt den krit. Bereich)
-	\item {$Bel:=\{bel_i | i \in I\}$} die Sperre wird belegt (I ist Menge der Threads)
-	\item {$Fr:=\{fr_i | i \in I\}$} die Sperre wird freigegeben
+	\item [$ant_i$] Thread i beantragt die Sperre
+	\item [$bel_i$] Thread i belegt die Sperre (betritt den krit. Bereich)
+	\item [$fr_i$] Thread i gibt die Sperre frei (verlässt den krit. Bereich)
+	\item [$Bel:=\{bel_i | i \in I\}$] die Sperre wird belegt (I ist Menge der Threads)
+	\item [$Fr:=\{fr_i | i \in I\}$] die Sperre wird freigegeben
 \end{description}
-\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl4.jpeg}\\
-Gegenseitiger Ausschluss
-\subsection*{1. Mit regulären Ausdrücken}
+\includegraphics[width=.4\textwidth]{Verifikation_Zeitstrahl4.jpeg}
+\pagebreak
+
+\subsection*{Gegenseitiger Ausschluss}
+\subsubsection*{1. Mit regulären Ausdrücken}
 Für jeden Ablauf x gilt: Für jedes endliche Anfangsstück y von x gilt:\\
 Die Projektion von y auf die Aktionenmenge $Bel \cup Fr$ ist in der Sprache $(Bel Fr)^*(Bel + \epsilon) = PRE((Bel Fr)^*)$ ("`Präfixabschluss"')\\
-Sei $Ant:=\{ant_i | i \in I\}$ und $A:=Ant \cup Bel \cup Fr$. Dann kann man gegenseitigen Ausschluss als Formel angeben: $\forall x \in A^{infty}: \forall y \leq_{pre} x: \#_y <_\infty \Rightarrow \pi_{Bel \cup Fr}(y) \in PRE((Bel Fr)^*)$ Ausgeschlossen ist z.B. der Ablauf $bel_1 bel_1 fr_2$\\
-Präfixablauf definiert durch $PRE(x)= \{y \in A^* | y \leq_{pre} x \}$.
+Sei $Ant:=\{ant_i | i \in I\}$ und $A:=Ant \cup Bel \cup Fr$. Dann kann man gegenseitigen Ausschluss als Formel angeben: $\forall x \in A^{infty}: \forall y \leq_{\pre} x: \#_y <_\infty \Rightarrow \pi_{Bel \cup Fr}(y) \in PRE((Bel Fr)^*)$\\
+Ausgeschlossen ist z.B. der Ablauf $bel_1 bel_1 fr_2$\\
+Präfixabschluss definiert durch $PRE(x)= \{y \in A^* | y \leq_{\pre} x \}$.
 Bemerkung: Sicherheitseigenschaften kann man immer mit Präfixabschluss beweisen.
 Formel für gegenseitigen Ausschluss kompakter: $\pi_{Bel \cup Fr}(PRE(x)) \subseteq PRE((Bel Fr)^*)$
 Zugelassen ist z.B. der Ablauf $bel_1 fr_2 ant_1$. Ausgeschlossen ist z.B. $bel_1 bel_1 fr_2$.
-Falls $y \leq_{pre} x$ und $x \in X$ , dann $y \in PRE(x)$.
-$X \subseteq A^*$ ist abgeschlossen untrer Pfäfixen, falls $PRE(X) \subseteq X$. Es gilt: $PRE(X)$ ist abgeschlossen unter Präfixen
-\subsection*{2. Mit Formeln der Prädikatenlogik}
+Falls $y \leq_{\pre} x$ und $x \in X$ , dann $y \in PRE(x)$.
+$X \subseteq A^*$ ist abgeschlossen unter Präfixen, falls $PRE(X) \subseteq X$. Es gilt: $PRE(X)$ ist abgeschlossen unter Präfixen
+\subsubsection*{2. Mit Formeln der Prädikatenlogik}
 $\forall y \in PRE(x) \cap A^*: 0 \leq \#_{Bel}y - \#_{Fr} \leq 1$.
 Oder: $\forall i \in \mathbb{N}: Bel_x^i \leq Fr_x^i \leq Bel_x^{i+1}$
 Oder $\forall k,l \in \mathbb{N}. fr_{i x}^k < bel_{j x}^l \lor fr_{j x}^l < bel_{i x}^k$
 
-\subsection*{3. Mit Zustandsautomaten}
+\subsubsection*{3. Mit Zustandsautomaten}
 siehe Bild
 
-\subsection*{4. Lineare Temporale Aussagenlogik}
-Hier: lineare Temporale Aussagenlogik.
-Syntax: Formeln sind aufgebaut mit
+\subsubsection*{Lineare temporale Logik}
+Hier: Lineare temporale Aussagenlogik.
+
+Syntax: Formeln sind aufgebaut mit:
+
 \begin{itemize}
-	\item Konstanten true, false
-	\item boolsche Variablen
-	\item Verknüpfungen $\land, \lor, \neg$ (weitere möglich: $\Rightarrow, \Leftrightarrow$, endliche Quantoren $\bigvee_{i \in M}, \bigwedge_{i \in M}$)
+	\item true, false
+	\item Variablen
+	\item Verknüpfungen $ \wedge, \vee, \neg $ (weitere Verknüpfungen können damit definiert werden, z.B. $ \Rightarrow, \Leftrightarrow, \oplus $. Endliche Quantoren $ \wedge_{i \in M} $ "`für alle $ i \in M $"', $ \vee_{i \in M} $ "`es existiert $ i \in M $"' mit M endlich.)
 	\item temporale Operatoren
 	\begin{itemize}
-		\item $o$ next: im nächsten Zustand gilt
-		\item $\square$ always: in allen zukünftigen Zuständen gilt
-		\item $\diamond$ eventually: in mindestens einem Zustand gilt
+		\item $ \bigcirc $ "`next"' "`im nächten Zustand gilt"'
+		\item $ \square $ "`always"' "`in allen zukünftigen Zuständen gilt"'
+		\item $ \diamond $ "`eventually"' "`in mind. einem zukünftigen Zustand gilt"' 
 	\end{itemize}
 \end{itemize}
 
-Beispiel: Wer A sagt, muss auch B sagen: $\square(A \Rightarrow \diamond B)$ \\
-Never change a running system: $\square(R \Rightarrow o R)$
-Semantik
-\begin{itemize}
-	\item $\sigma$ sei ein serieller Ablauf
-	\item j sei eine natürliche Zahl
-	\item p sei eine temporal-logische Formel
-\end{itemize}
+Beispiel: "`Wer A sagt, muss auch B sagen"'
 
-$(\sigma, j) \models_{erfüllt} p$ Formel p gilt an Position j im Ablauf  $\sigma$\\
-$(\sigma, i) \models p \land q \Leftrightarrow (\sigma, i) \models p \land (\sigma, i) \models q$ usw. für andere aussagenlogische Formeln\\
-Rekursive Definition:\\
-$(\sigma, j) \models o p \leftrightarrow (\sigma, j +1) \models p$\\
-$(\sigma, j) \models \square p \leftrightarrow \forall k \geq j: (\sigma, k) \models p$\\
-$(\sigma, j) \models \diamond p \leftrightarrow \exists k \geq j: (\sigma, k) \models p$
+\begin{equation*}
+\square (A \Rightarrow B)
+\end{equation*}
+
+"`Never change a running system"'
+
+\begin{equation*}
+\square (R \Rightarrow \square R)
+\end{equation*}
+
+gleichwertig: $ \square (R \Rightarrow \bigcirc R) $
+
+\subsubsection*{Semantik}
+
+$ \sigma $ sei ein serieller Ablauf\\
+$ j $ sei eine natürliche Zahl\\
+$ p $ sei eine temporal logische Formel\\
+\\ % \models heißt erfüllt
+$ (\sigma, j) \models p $ \quad "`Formel $ p $ gilt an Position $ j $ des Ablaufs $ \sigma $"'
+
+Das wird rekursiv definiert durch:
+
+\begin{align*}
+& (\sigma, j) \models p \wedge q : \Leftrightarrow\\
+& (\sigma, j) \models p \wedge (\sigma, j) \models q\\
+& \text{usw.} \\ % TODO: Zusätzliches Ausrichten nach :<=>
+& (\sigma, j) \models \bigcirc p : \Leftrightarrow (\sigma, j + 1) \models p\\
+& (\sigma, j) \models \square p : \Leftrightarrow \forall k \geq j: (\sigma, k) \models p\\
+& (\sigma, j) \models \diamond p : \Leftrightarrow \exists k \geq j: (\sigma, k) \models p
+\end{align*}
+
+Gegenseitiger Ausschluss mit temporal-logischen Formeln:\\
+Beispiel:\\
+$z_x :\Leftrightarrow 0 \leq \#_{Bel}x - \#_{Fr} x \leq 1$\\
+$ \square z $\\
+\\
+Kein Verhungern:\\
+$ beant_{i\ x} :\Leftrightarrow \#_{ant_i}x > \#_{bel_i}x $\\
+"`Thread i hat die Sperre beantragt, aber noch nicht belegt"'\\
+\\
+$ a_x $ soll bedeuten: Aktion $ a $ ist im Zustand $ x $ soeben ausgeführt worden.
+
+\begin{lstlisting}
+                        
+                       _ Zustand x
+------------------------|
+---------------------|--|------------------ Ablauf
+                     a _|
+\end{lstlisting}
+
+Semantik dazu:\\
+$(\sigma, j) \models a : \Leftrightarrow \sigma(j) = a$
+$ \square (beant_i \Rightarrow \diamond bel_i) $
 
